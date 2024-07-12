@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
 import { useRouter } from "next/navigation"
+import axios from 'axios';
 
 
 export default function SignInPage() {
@@ -19,9 +20,15 @@ export default function SignInPage() {
     // Disable login when Privy is not ready or the user is already authenticated
     const disableLogin = !ready || (ready && authenticated);
 
+    const handleUserLogin = async () => {
+        const { data } = await axios.post(`/api/creator`);
+        router.push(`/home`)
+    };
+
+
     useEffect(() => {
         if (authenticated) {
-            router.push(`/home`)
+            handleUserLogin();
         }
     }, [authenticated]);
 
@@ -32,7 +39,9 @@ export default function SignInPage() {
                 <CardHeader>
                     <CardTitle className="text-2xl">Login</CardTitle>
                     <CardDescription>
-                        Enter your email below to login to your account.
+                        <div className="mt-2">
+                            <span className="block">Powered by privy</span>
+                        </div>
                     </CardDescription>
                 </CardHeader>
                 <CardFooter>

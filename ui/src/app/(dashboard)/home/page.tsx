@@ -15,9 +15,8 @@ export default function HomePage() {
     }, [ready, authenticated]);
 
     return (
-        <div className="flex justify-center items-center h-screen">
-
-            Home! Welcome
-        </div >
-    );
+        <>
+            Home
+        </>
+    )
 }

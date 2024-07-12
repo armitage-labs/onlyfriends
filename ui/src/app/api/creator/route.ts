@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getUserToken, verifyAuthToken } from "../untils/authentication";
 
 export async function GET(req: NextRequest) {
   return NextResponse.json({
@@ -7,6 +8,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const accessToken = getUserToken(req);
+  const claims = await verifyAuthToken(accessToken);
+
+  // create creator
+
   return NextResponse.json({
     success: false,
   });
