@@ -11,9 +11,11 @@ export async function POST(req: NextRequest) {
   const accessToken = getUserToken(req);
   const claims = await verifyAuthToken(accessToken);
 
+  console.log(claims);
+
   // create creator
 
   return NextResponse.json({
-    success: false,
+    success: true,
   });
 }
