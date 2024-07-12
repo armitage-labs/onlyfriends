@@ -17,6 +17,7 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
+    "@vercel/blob": "^0.23.4",
     "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -27,8 +28,8 @@
     "react-dom": "^18",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "viem": "^2.17.3",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "viem": "^2.17.3"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
