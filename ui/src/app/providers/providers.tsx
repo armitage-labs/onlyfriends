@@ -9,9 +9,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                 loginMethods: [
                     'farcaster'
                 ],
-                embeddedWallets: {
-                    createOnLogin: 'users-without-wallets',
-                },
+                // embeddedWallets: {
+                //     createOnLogin: 'users-without-wallets',
+                // },
             }}
         >
             {children}

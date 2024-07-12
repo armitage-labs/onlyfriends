@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation"
 
 export default function HomePage() {
   const router = useRouter();
-  const { ready, authenticated, login } = usePrivy();
+  const { ready, authenticated } = usePrivy();
 
   useEffect(() => {
     if (ready && !authenticated) {
-      // router.push(`/sign-in`)
+      router.push(`/sign-in`)
     }
   }, [ready, authenticated]);
 

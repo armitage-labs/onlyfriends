@@ -16,8 +16,7 @@ import axios from 'axios';
 
 export default function SignInPage() {
     const router = useRouter();
-    const { ready, authenticated, login, user, linkWallet } = usePrivy();
-    const { requestFarcasterSignerFromWarpcast } = useFarcasterSigner();
+    const { ready, authenticated, login } = usePrivy();
 
     const disableLogin = !ready || (ready && authenticated);
 
