@@ -3,15 +3,29 @@
 import { ConnectedWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"
+import { Network, Alchemy } from "alchemy-sdk";
 import { encodeFunctionData } from "viem"
 import { BondageCurveFactoryAbi } from "@/abis/bondageCurveFactory";
+import { Heading } from "@/components/ui/heading";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
+
+  const settings = {
+    apiKey: "oCc1sE76h91d0-STTYmZTBk77xgTA1rR",
+    network: Network.BASE_SEPOLIA
+  }
+  const alchemy = new Alchemy(settings);
+
+
   const router = useRouter();
   const { ready, authenticated } = usePrivy();
   const { ready: walletReady, wallets } = useWallets();
   const [connectedWalletAddress, setConnectedWalletAddress] = useState<string>();
   const [connectedWallet, setConnectedWallet] = useState<ConnectedWallet>();
+  const [deployedBondageCurveAddress, setDeployedBondageCurveAddress] = useState<string>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [connectedChainId, setConnectedChainId] = useState<string>();
   useEffect(() => {
@@ -28,16 +42,9 @@ export default function HomePage() {
     }
   }, [walletReady, wallets])
 
-  useEffect(() => {
-    if (connectedWallet && connectedChainId) {
-      handleGetProviderFromWallet();
-    }
-  }, [connectedChainId, connectedWalletAddress]);
-
-  const handleGetProviderFromWallet = async () => {
+  const handleDeployBondageCurve = async () => {
     if (!connectedWallet || !connectedWalletAddress) return;
     const provider = await connectedWallet?.getEthereumProvider();
-    const message = "This is a test message";
 
     const data = encodeFunctionData({
       abi: BondageCurveFactoryAbi,
@@ -46,6 +53,8 @@ export default function HomePage() {
     });
 
 
+
+    setIsLoading(true);
     const transactionHash = await provider.request({
       method: "eth_sendTransaction",
       params: [
@@ -56,21 +65,34 @@ export default function HomePage() {
         }
       ]
     });
-    console.log("FINISHED:");
-    console.log(transactionHash);
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    const deployedBondageCurve = txReceipt?.logs[1].data;
+    console.log("Bondage Curve deployed at address: ", "0x" + deployedBondageCurve?.slice(26));
+    setDeployedBondageCurveAddress("0x" + deployedBondageCurve?.slice(26));
+    setIsLoading(false);
   };
 
   return (
-    <div className="pl-6 pt-20">
-      Account page
+    <div className="flex-1 space-y-4  p-4 md:p-8">
+
+      <div className="flex items-start justify-between">
+
+        <Heading title="Account" description="Activate and manage your account"></Heading>
+      </div>
+
+      <Separator />
       <div>
         You have not yet activated your account
       </div>
+      <Button
+        disabled={!(connectedWallet || connectedChainId) || isLoading}
+        onClick={handleDeployBondageCurve}>
+        {isLoading ? "Deploying Bondage Curve..." : "Activate and deploy your Bondage Curve!"}
+      </Button>
       <div>
-        Activate your account and create your own personal token using the Bondage Curve
+        {deployedBondageCurveAddress ? `Bondage Curve deployed at address: ${deployedBondageCurveAddress}` : null}
       </div>
-      <div>
-        You are connected to {connectedWalletAddress} on chainID: {connectedChainId}</div>
     </div>
   )
 }
