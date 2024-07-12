@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@frames.js/debugger": "^0.3.5",
     "@prisma/client": "5.16.2",
     "@privy-io/react-auth": "^1.74.1",
     "@privy-io/server-auth": "^1.9.1",

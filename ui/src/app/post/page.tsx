@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
         description: "This is a hidden frame",
         other: {
             ...(await fetchMetadata(
-                new URL("/posts/frames", appURL())
+                new URL("/post/frames", appURL())
             )),
         },
     };
