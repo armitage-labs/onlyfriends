@@ -1,17 +1,19 @@
 "use client";
 
-import { usePrivy } from "@privy-io/react-auth";
+import { WalletWithMetadata, usePrivy } from "@privy-io/react-auth";
 import { Button } from "../ui/button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { LinkedAccountWithMetadata } from "@privy-io/server-auth";
 
 export default function WalletButton() {
+    const [linkedWallet, setLinkedWallet] = useState<WalletWithMetadata>();
     const { ready, authenticated, user, linkWallet } = usePrivy();
     const disableLogout = !ready || (ready && !authenticated);
 
 
     useEffect(() => {
         if (user != null) {
-            console.log(user.linkedAccounts);
+            // setLinkedAccounts(user.linkedAccounts)
         }
     }, [user]);
 
