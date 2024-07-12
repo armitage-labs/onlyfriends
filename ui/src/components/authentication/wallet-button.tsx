@@ -8,18 +8,40 @@ import { LinkedAccountWithMetadata } from "@privy-io/server-auth";
 export default function WalletButton() {
     const [linkedWallet, setLinkedWallet] = useState<WalletWithMetadata>();
     const { ready, authenticated, user, linkWallet } = usePrivy();
-    const disableLogout = !ready || (ready && !authenticated);
+    const disableLinkWallet = !ready || (ready && !authenticated) || linkedWallet != null;
+
+    /**
+     * TODO move to util
+     */
+    const truncateMiddle = (str: string, firstChars: number, lastChars: number) => {
+        if (str.length <= firstChars + lastChars) {
+            return str;
+        }
+        const startChars = str.slice(0, firstChars);
+        const endChars = str.slice(-lastChars);
+
+        return `${startChars}...${endChars}`;
+    };
 
 
     useEffect(() => {
         if (user != null) {
-            // setLinkedAccounts(user.linkedAccounts)
+            const walletAccount = user.linkedAccounts.find(account => account.type === 'wallet');
+            setLinkedWallet(walletAccount as WalletWithMetadata);
         }
     }, [user]);
 
     return (
-        <Button variant={'outline'} className="rounded-full" disabled={disableLogout} onClick={linkWallet}>
-            Link Wallet
+        <Button variant={'outline'} className="rounded-full" disabled={disableLinkWallet} onClick={linkWallet}>
+            {linkedWallet == null ? (
+                <>
+                    Link Wallet
+                </>
+            ) : (
+                <>
+                    {truncateMiddle(linkedWallet.address, 4, 4)} Connected
+                </>
+            )}
         </Button>
     )
 }
