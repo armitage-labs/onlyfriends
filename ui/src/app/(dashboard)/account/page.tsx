@@ -3,6 +3,7 @@
 import { ConnectedWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"
+import { encodeFunctionData } from "viem"
 
 export default function HomePage() {
   const router = useRouter();
@@ -42,6 +43,8 @@ export default function HomePage() {
       method: "personal_sign",
       params: [message, connectedWalletAddress],
     })
+
+    // const data = encodeFunctionData({});
   };
 
   return (
