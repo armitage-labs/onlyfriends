@@ -51,11 +51,13 @@ import {
   GitCompare,
   FolderRoot,
   FolderTree,
+  Send,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  send: Send,
   dashboard: LayoutDashboardIcon,
   gitBranch: GitBranch,
   messageCircleHeart: MessageCircleHeart,

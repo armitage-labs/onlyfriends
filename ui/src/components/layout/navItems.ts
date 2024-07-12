@@ -8,6 +8,12 @@ export const signedInNavItems: NavItem[] = [
     label: "dashboard",
   },
   {
+    title: "Posts",
+    href: "/posts",
+    icon: "send",
+    label: "posts",
+  },
+  {
     title: "Account",
     href: "/account",
     icon: "folderGit2",
