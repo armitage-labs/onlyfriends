@@ -17,6 +17,10 @@ export default function HomePage() {
   return (
     <>
       Home
+      Account page
+
+
+      Activate your account and create your own personal token using the Bondage Curve
     </>
   )
 }
