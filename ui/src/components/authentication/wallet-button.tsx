@@ -3,7 +3,6 @@
 import { WalletWithMetadata, usePrivy } from "@privy-io/react-auth";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
-import { LinkedAccountWithMetadata } from "@privy-io/server-auth";
 
 export default function WalletButton() {
     const [linkedWallet, setLinkedWallet] = useState<WalletWithMetadata>();
@@ -26,6 +25,8 @@ export default function WalletButton() {
 
     useEffect(() => {
         if (user != null) {
+            console.log(user.linkedAccounts);
+            console.log(user);
             const walletAccount = user.linkedAccounts.find(account => account.type === 'wallet');
             setLinkedWallet(walletAccount as WalletWithMetadata);
         }

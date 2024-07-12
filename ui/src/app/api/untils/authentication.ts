@@ -6,12 +6,25 @@ const privy = new PrivyClient(
   process.env.PRIVY_TOKEN_SECRET!
 );
 
+export function isAuthenticated(req: NextRequest): boolean {
+  const token = getUserToken(req);
+  if (token == null) {
+    return false;
+  }
+  const claims = verifyAuthToken(token);
+  if (claims != null) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export function getUserToken(req: NextRequest): string | undefined {
   return req.cookies.get("privy-token")?.value;
 }
 
 export async function verifyAuthToken(
-  authToken?: string
+  authToken: string
 ): Promise<AuthTokenClaims | null> {
   if (authToken == null) {
     return null;

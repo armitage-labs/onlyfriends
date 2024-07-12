@@ -1,6 +1,6 @@
 "use client";
 
-import { useFarcasterSigner, usePrivy } from '@privy-io/react-auth';
+import { useFarcasterSigner, usePrivy, } from '@privy-io/react-auth';
 import {
     Card,
     CardDescription,
@@ -16,13 +16,20 @@ import axios from 'axios';
 
 export default function SignInPage() {
     const router = useRouter();
-    const { ready, authenticated, login } = usePrivy();
+    const { ready, authenticated, login, user } = usePrivy();
 
     const disableLogin = !ready || (ready && authenticated);
 
     const handleUserLogin = async () => {
-        const { data } = await axios.post(`/api/creator`);
-        console.log(data);
+        const { data } = await axios.post(`/api/users`, {
+            providerId: user?.id,
+            fid: user?.farcaster?.fid,
+            bio: user?.farcaster?.bio,
+            ownerAddress: user?.farcaster?.ownerAddress,
+            profileUrl: user?.farcaster?.pfp,
+            displayName: user?.farcaster?.displayName,
+            username: user?.farcaster?.username,
+        });
         if (data.success) {
             router.push(`/home`)
         }
@@ -30,22 +37,10 @@ export default function SignInPage() {
 
 
     useEffect(() => {
-        if (authenticated) {
+        if (authenticated && user != null) {
             handleUserLogin();
         }
-    }, [authenticated]);
-
-    // useEffect(() => {
-    // linkWallet();
-    //     if (user) {
-    //         // requestFarcasterSignerFromWarpcast();
-    //         // const farcasterAccount = user.linkedAccounts.find((account) => account.type === 'farcaster');
-    //         // console.log(farcasterAccount);
-    //         // handleUserLogin();
-    //         linkWallet();
-    //         console.log(user);
-    //     }
-    // }, [user]);
+    }, [authenticated, user]);
 
     return (
         <div className="flex justify-center items-center h-screen">
