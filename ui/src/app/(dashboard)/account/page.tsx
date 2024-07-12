@@ -4,6 +4,7 @@ import { ConnectedWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"
 import { encodeFunctionData } from "viem"
+import { BondageCurveFactoryAbi } from "@/abis/bondageCurveFactory";
 
 export default function HomePage() {
   const router = useRouter();
@@ -34,17 +35,47 @@ export default function HomePage() {
   }, [connectedChainId, connectedWalletAddress]);
 
   const handleGetProviderFromWallet = async () => {
-    console.log("handling provider");
     if (!connectedWallet || !connectedWalletAddress) return;
-    console.log("passed condition");
     const provider = await connectedWallet?.getEthereumProvider();
     const message = "This is a test message";
-    const signature = await provider.request({
-      method: "personal_sign",
-      params: [message, connectedWalletAddress],
-    })
+    // const signature = await provider.request({
+    //   method: "personal_sign",
+    //   params: [message, connectedWalletAddress],
+    // })
+    //
 
-    // const data = encodeFunctionData({});
+    // const transactionHash = await provider.request({
+    //   method: "eth_sendTransaction",
+    //   params: [
+    //     {
+    //       from: connectedWalletAddress,
+    //       to: "0x771B0A0aD2671A0b269DE4870b2AeF93d0D1961F",
+    //       value: "1",
+    //     }
+    //   ],
+    // })
+
+    const data = encodeFunctionData({
+      abi: BondageCurveFactoryAbi,
+      functionName: "deployNewBondageCurve",
+      args: ["GabBondageToken", "GBT", "0xCBD0DA5A02c31E504a812205089E876b5a329BB1", "0x036CbD53842c5426634e7929541eC2318f3dCF7e"]
+    });
+
+    // const transactionRequest = {
+    //   to: "0x9BA85d1Abc5cE9b12b54825944e145a5c6ceb4E9",
+    //   data: data,
+    // };
+
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: connectedWalletAddress,
+          to: "0x9BA85d1Abc5cE9b12b54825944e145a5c6ceb4E9",
+          data: data,
+        }
+      ]
+    });
   };
 
   return (
