@@ -17,6 +17,10 @@ contract MockERC20 is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 		address initialOwner
 	) ERC20(name, symbol) Ownable(initialOwner) {}
 
+	function decimals() public pure override returns (uint8) {
+		return 6;
+	}
+
 	function pause() external onlyOwner {
 		_pause();
 	}

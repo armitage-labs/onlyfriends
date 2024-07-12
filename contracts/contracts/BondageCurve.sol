@@ -10,6 +10,7 @@ import { ERC20Pausable } from "@openzeppelin/contracts/token/ERC20/extensions/ER
 contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 	uint256 public protocolTreasuryBalance;
 	uint256 public contentCreatorBalance;
+	uint256 public totalContractBalance;
 	uint256 public totalMintedTokens;
 	uint256 public constant reserveRatio = 1000000; // Reserve ratio in ppm (parts per million)
 	uint256 public constant supply = 1000000; // Total supply of tokens
@@ -69,6 +70,7 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 		);
 		usdc.transfer(msg.sender, contentCreatorBalance);
 		contentCreatorBalance = 0;
+		totalContractBalance = totalContractBalance - contentCreatorBalance;
 	}
 
 	function protocolTreasuryBalanceWithdrawal() external onlyOwner {
@@ -78,6 +80,7 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 		);
 		usdc.transfer(msg.sender, protocolTreasuryBalance);
 		protocolTreasuryBalance = 0;
+		totalContractBalance = totalContractBalance - protocolTreasuryBalance;
 	}
 
 	function purchaseTokens(uint256 usdcAmount) public {
@@ -96,6 +99,7 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 		uint256 tokensToMint = calculatePurchaseReturnPrice(usdcAmount);
 		protocolTreasuryBalance += (usdcAmount * 20) / 100;
 		contentCreatorBalance += (usdcAmount * 80) / 100;
+		totalContractBalance += usdcAmount;
 		totalMintedTokens += tokensToMint;
 		_mint(msg.sender, tokensToMint);
 
@@ -121,7 +125,7 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 			"Not enough allowance to purchase subscription"
 		);
 
-		this.burnFrom(msg.sender, subscriptionPriceInTokens);
+		_burn(msg.sender, subscriptionPriceInTokens);
 
 		emit TokensBurned(subscriptionPriceInTokens);
 		emit SubscriptionPurchased(msg.sender);
