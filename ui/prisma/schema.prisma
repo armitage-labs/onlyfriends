@@ -14,14 +14,15 @@ datasource db {
 }
 
 model Users {
-  id           String   @id @default(uuid())
-  username     String?  @unique
-  display_name String?
-  provider_id  String   @unique
-  profile_pic  String?
-  bio          String?
-  created_at   DateTime @default(now()) @db.Timestamp(6)
-  Posts        Posts[]
+  id            String          @id @default(uuid())
+  username      String?         @unique
+  display_name  String?
+  provider_id   String          @unique
+  profile_pic   String?
+  bio           String?
+  created_at    DateTime        @default(now()) @db.Timestamp(6)
+  Posts         Posts[]
+  TokenSettings TokenSettings[]
 }
 
 model Posts {
@@ -39,4 +40,14 @@ model PostsFrames {
   post_id    String
   post_image String
   posts      Posts? @relation(fields: [post_id], references: [id], onDelete: Cascade)
+}
+
+model TokenSettings {
+  id            String @id @default(uuid())
+  user_id       String
+  chain_id      String
+  token_name    String
+  token_address String @unique
+  token_symbol  String @unique
+  user          Users? @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
