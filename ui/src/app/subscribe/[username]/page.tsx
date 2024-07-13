@@ -407,7 +407,7 @@ export default function SubscriptionPage({ params }: PageProps) {
                     {(activeSubscription == null) ? (
                       <>Subscribe</>
                     ) : (
-                      <>Subscribe Active</>
+                      <>Subscription Active</>
                     )}
                   </Button>
                 </div>
