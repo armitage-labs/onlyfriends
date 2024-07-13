@@ -36,6 +36,8 @@ export default function SubscriptionPage({ params }: PageProps) {
   const { walletConnector } = useDynamicContext();
   const { primaryWallet } = useDynamicContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [userTokenBalance, setUserTokenBalance] = useState<string>();
+  const [subscriptionPrice, setSubscriptionPrice] = useState<string>();
 
   const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_APIKEY || "";
 
@@ -63,6 +65,8 @@ export default function SubscriptionPage({ params }: PageProps) {
     if (tokenSettings != null && walletConnector != null) {
       handleSwitchNetwork();
       handleFetchActiveSubscription();
+      handleUserTokenBalance();
+      handleGetSubscriptionPrice();
     }
   }, [tokenSettings, walletConnector]);
 
@@ -117,6 +121,29 @@ export default function SubscriptionPage({ params }: PageProps) {
     if (data.success) {
       setTokenSettings(data.tokenSettings);
     }
+  }
+
+  const handleUserTokenBalance = async () => {
+    if (primaryWallet == null) return;
+    const data = await publicClient.readContract({
+      address: `0x${tokenSettings?.token_address.slice(2)}`,
+      abi: BondageCurveAbi,
+      functionName: "balanceOf",
+      args: [`0x${primaryWallet.address.slice(2)}`]
+    })
+    console.log("User token balance:", data);
+    setUserTokenBalance(String(data));
+  }
+
+  const handleGetSubscriptionPrice = async () => {
+    if (primaryWallet == null) return;
+    const data = await publicClient.readContract({
+      address: `0x${tokenSettings?.token_address.slice(2)}`,
+      abi: BondageCurveAbi,
+      functionName: "calculateSubscriptionPrice",
+    })
+    console.log("Subscription price in tokens:", data);
+    setSubscriptionPrice(String(data));
   }
 
   const handlePurchaseTokens = async (usdcAmount: number) => {
@@ -346,7 +373,13 @@ export default function SubscriptionPage({ params }: PageProps) {
 
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <div className="text-xl font-semibold mb-4">Purchase Tokens</div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Your ${tokenSettings.token_symbol} Balance</span>
+                    <span className="font-medium text-primary-500">{(Number(userTokenBalance) / 1000000).toFixed(3)}</span>
+                  </div>
                   <div className="pt-3 flex flex-row space-x-3">
+
                     <Button
                       disabled={(!(purchaseAmount && Number(purchaseAmount) > 0) || primaryWallet == null)}
                       onClick={() => handlePurchaseTokens(Number(purchaseAmount))}
@@ -365,6 +398,11 @@ export default function SubscriptionPage({ params }: PageProps) {
 
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <div className="text-xl font-semibold mb-4">Purchase Subscription</div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Current subscription price</span>
+                    <span className="font-medium text-primary-500">{(Number(subscriptionPrice) / 1000000).toFixed(3)} {tokenSettings.token_symbol}</span>
+                  </div>
                   <Button disabled={activeSubscription != null || primaryWallet == null} onClick={() => handlePurchaseSubscription()} variant="default" className="mt-4 w-full">
                     {(activeSubscription == null) ? (
                       <>Subscribe</>
