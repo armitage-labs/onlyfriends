@@ -13,7 +13,6 @@ const handler = async (
     req: NextRequest,
     { params: { id } }: { params: { id: string } }
 ) => {
-    console.log(id);
     const post = await fetchPost(id);
     if (post == null) {
         return await create404Frame(req);

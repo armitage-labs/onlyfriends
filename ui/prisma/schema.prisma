@@ -21,8 +21,9 @@ model Users {
   profile_pic   String?
   bio           String?
   created_at    DateTime        @default(now()) @db.Timestamp(6)
-  Posts         Posts[]
-  TokenSettings TokenSettings[]
+  posts         Posts[]
+  tokenSettings TokenSettings[]
+  invoices      Invoices[]
 }
 
 model Posts {
@@ -50,4 +51,14 @@ model TokenSettings {
   token_address String @unique
   token_symbol  String @unique
   user          Users? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Invoices {
+  id            String   @id @default(uuid())
+  user_id       String
+  walet_address String
+  txId          String
+  start_time    DateTime
+  end_time      DateTime
+  user          Users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
