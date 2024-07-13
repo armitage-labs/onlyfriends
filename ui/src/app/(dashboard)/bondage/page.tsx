@@ -12,6 +12,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { TokenSettings } from "@prisma/client";
+import { publicClient } from "@/utils/viemClient";
+import { BondageCurveAbi } from "@/abis/bondageCurve";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Icons } from "@/components/icons";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Link from "next/link";
+import { UsdcAbi } from "@/abis/usdc";
 
 export default function HomePage() {
 
@@ -35,6 +42,8 @@ export default function HomePage() {
   const [tokenName, setTokenName] = useState<string>();
   const [tokenSymbol, setTokenSymbol] = useState<string>();
   const [tokenSettings, setTokenSettings] = useState<TokenSettings>();
+  const [contentCreatorBalanceAvailable, setCreatorBalanceAvailable] = useState<string>();
+  const [purchaseAmount, setPurchaseAmount] = useState<string>();
 
   const [connectedChainId, setConnectedChainId] = useState<string>();
   useEffect(() => {
@@ -62,6 +71,10 @@ export default function HomePage() {
     }
   }, [deployedBondageCurveAddress]);
 
+  useEffect(() => {
+    handleFetchCreatorBalance();
+  }, [tokenSettings]);
+
   const handleCreateTokenSettings = async () => {
     const { data } = await axios.post(`/api/token-settings`, {
       providerId: user?.id,
@@ -83,8 +96,106 @@ export default function HomePage() {
     setPageInitialized(true);
   }
 
+
+  const handleFetchCreatorBalance = async () => {
+    if (!tokenSettings) return;
+    const data = await publicClient.readContract({
+      address: `0x${tokenSettings?.token_address.slice(2)}`,
+      abi: BondageCurveAbi,
+      functionName: "contentCreatorBalance",
+    })
+    console.log("Creator balance:", data);
+    setCreatorBalanceAvailable(String(data));
+  }
+
+  const handleApproveUsdcAllowance = async () => {
+    if (!connectedWallet || !connectedWalletAddress) return;
+
+    const provider = await connectedWallet?.getEthereumProvider();
+
+    const data = encodeFunctionData({
+      abi: UsdcAbi,
+      functionName: "approve",
+      // args: [usdcAmount]
+      //101000000
+      args: [`0x${tokenSettings?.token_address.slice(2)}`, 1010000000000000n]
+    })
+
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: connectedWalletAddress,
+          to: `0x036CbD53842c5426634e7929541eC2318f3dCF7e`,
+          data: data
+        }
+      ]
+    });
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    console.log("Allowance approved");
+    console.log(txReceipt);
+  }
+
+  const handlePurchaseTokens = async (usdcAmount: number) => {
+    if (!connectedWallet || !connectedWalletAddress) return;
+
+    const provider = await connectedWallet?.getEthereumProvider();
+
+    const data = encodeFunctionData({
+      abi: BondageCurveAbi,
+      functionName: "purchaseTokens",
+      args: [BigInt(usdcAmount * 1000000)]
+    })
+
+    setIsLoading(true);
+    await handleApproveUsdcAllowance();
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: connectedWalletAddress,
+          to: `0x${tokenSettings?.token_address.slice(2)}`,
+          data: data
+        }
+      ]
+    });
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    console.log(txReceipt);
+    setIsLoading(false);
+  }
+
+  const handleWithdrawContentCreatorBalance = async () => {
+    if (!connectedWallet || !connectedWalletAddress) return;
+    const provider = await connectedWallet?.getEthereumProvider();
+
+    const data = encodeFunctionData({
+      abi: BondageCurveAbi,
+      functionName: "creatorBalanceWithdrawal",
+    })
+
+    setIsLoading(true);
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: connectedWalletAddress,
+          to: `0x${tokenSettings?.token_address.slice(2)}`,
+          data: data
+        }
+      ]
+    });
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    console.log(txReceipt);
+    setIsLoading(false);
+  };
+
   const handleDeployBondageCurve = async () => {
+    console.log("entered");
     if (!connectedWallet || !connectedWalletAddress || !tokenName || !tokenSymbol) return;
+    console.log("passed")
     const provider = await connectedWallet?.getEthereumProvider();
 
     const data = encodeFunctionData({
@@ -93,10 +204,8 @@ export default function HomePage() {
       // name, symbol, treasuryAddress, usdcAddress,
       args: [tokenName, tokenSymbol, "0xCBD0DA5A02c31E504a812205089E876b5a329BB1", "0x036CbD53842c5426634e7929541eC2318f3dCF7e"]
     });
-
-
-
     setIsLoading(true);
+
     const transactionHash = await provider.request({
       method: "eth_sendTransaction",
       params: [
@@ -132,7 +241,71 @@ export default function HomePage() {
           {deployedBondageCurveAddress || tokenSettings ? (
 
             <div>
-              {`Bondage Curve deployed at address: ${tokenSettings?.token_address}`}
+
+              <div className="m-5">
+
+                <Alert>
+                  <Icons.messageCircleHeart className="mr-2 h-4 w-4" />
+                  <AlertTitle>You have been pegged!</AlertTitle>
+                  <AlertDescription>
+                    <Link
+                      href={`https://base-sepolia.blockscout.com/address/${tokenSettings?.token_address}`}
+                    >
+                      {`Bondage Curve deployed at address: ${tokenSettings?.token_address}`}
+                    </Link>
+                  </AlertDescription>
+                </Alert>
+              </div>
+
+
+              <div className="m-3 grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+                <Card className="m-3">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
+                    <Icons.piggyBank></Icons.piggyBank>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {Number(contentCreatorBalanceAvailable) / 1000000} USDc
+                    </div>
+                    <div className="flex justify-between">
+
+                      <p className="pt-1 text-xs text-muted-foreground">
+                        Available for withdrawal immediately
+                      </p>
+                      <Button
+                        onClick={() => { console.log("clicked"); handleWithdrawContentCreatorBalance() }}
+                      >Withdrawal</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+
+                <Card className="m-3">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Purchase Your Pegged tokens</CardTitle>
+                    <Icons.coins></Icons.coins>
+                  </CardHeader>
+                  <CardContent>
+
+                    <div className="pt-3 flex flex-row space-x-3">
+                      <Button
+                        disabled={!(purchaseAmount && Number(purchaseAmount) > 0) || isLoading}
+                        onClick={() => handlePurchaseTokens(Number(purchaseAmount))}
+                      >Purchase Tokens (Input USDc amount)</Button>
+                      <Input
+                        type="number"
+                        placeholder="Amount"
+                        onChange={(event) =>
+                          setPurchaseAmount(event.target.value)
+                        }
+                      ></Input>
+                    </div>
+
+                  </CardContent>
+                </Card>
+              </div>
+
             </div>
           ) : (
             <div>
