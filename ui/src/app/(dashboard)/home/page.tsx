@@ -221,7 +221,7 @@ export default function HomePage() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {totalBurnedTokens}
+                        {Number(totalBurnedTokens) / 1000000}
                       </div>
                       <div className="flex justify-between">
                         <p className="pt-1 text-xs text-muted-foreground">

@@ -17,13 +17,7 @@ export const signedInNavItems: NavItem[] = [
     title: "Bondage",
     href: "/bondage",
     icon: "heartHandshake",
-    label: "bondage"
-  },
-  {
-    title: "Account",
-    href: "/account",
-    icon: "folderGit2",
-    label: "projects",
+    label: "bondage",
   },
 ];
 

@@ -89,7 +89,7 @@ async function createFrameHidden(req: NextRequest, user: Users, post: Posts) {
                     <Button
                         action="link"
                         target={
-                            `${appUrl}/creator/${slug}`
+                            `${appUrl}/subscribe/${slug}`
                         }
                     >
                         {buttonText}
