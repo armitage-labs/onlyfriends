@@ -25,9 +25,7 @@ export default function WalletButton() {
 
     useEffect(() => {
         if (user != null) {
-            console.log(user.linkedAccounts);
-            console.log(user);
-            const walletAccount = user.linkedAccounts.find(account => account.type === 'wallet');
+            const walletAccount = user.linkedAccounts.find(account => account.type === 'wallet' && account.connectorType == 'injected');
             setLinkedWallet(walletAccount as WalletWithMetadata);
         }
     }, [user]);
