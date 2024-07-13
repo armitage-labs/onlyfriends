@@ -22,6 +22,8 @@ export default function HomePage() {
   const [activeSubscriptionCount, setActiveSubscriptionCount] = useState<number>();
   const [tokenUsdcRate, setTokenUsdcRate] = useState<string>();
   const [totalMintedTokens, setTotalMintedTokens] = useState<string>();
+  const [totalBurnedTokens, setTotalBurnedTokens] = useState<string>();
+  const [totalSubscriptionsPurchased, setTotalSubscriptionsPurchased] = useState<string>();
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -36,7 +38,9 @@ export default function HomePage() {
       handleFetchCreatorBalance();
       handleFetchActiveSubscriptionCount();
       handleGetCreatorTokenPrice();
-      handleGetTotalMintedTokens()
+      handleGetTotalMintedTokens();
+      handleGetTotalSubscriptionsPurchased();
+      handleGetTotalBurnedTokens();
     }
   }, [tokenSettings]);
 
@@ -73,6 +77,25 @@ export default function HomePage() {
       functionName: "totalMintedTokens",
     })
     setTotalMintedTokens(String(data));
+  }
+
+
+  const handleGetTotalBurnedTokens = async () => {
+    const data = await publicClient.readContract({
+      address: `0x${tokenSettings?.token_address.slice(2)}`,
+      abi: BondageCurveAbi,
+      functionName: "totalBurnedTokens",
+    })
+    setTotalBurnedTokens(String(data));
+  }
+
+  const handleGetTotalSubscriptionsPurchased = async () => {
+    const data = await publicClient.readContract({
+      address: `0x${tokenSettings?.token_address.slice(2)}`,
+      abi: BondageCurveAbi,
+      functionName: "totalSubscriptionsPurchased",
+    })
+    setTotalSubscriptionsPurchased(String(data));
   }
 
   const handleGetCreatorTokenPrice = async () => {
@@ -186,6 +209,41 @@ export default function HomePage() {
                       <div className="flex justify-between">
                         <p className="pt-1 text-xs text-muted-foreground">
                           All tokens minted
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total Burned Tokens</CardTitle>
+                      <Icons.coins></Icons.coins>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {totalBurnedTokens}
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="pt-1 text-xs text-muted-foreground">
+                          All tokens burned
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total Subscriptions Purchased</CardTitle>
+                      <Icons.coins></Icons.coins>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {totalSubscriptionsPurchased}
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="pt-1 text-xs text-muted-foreground">
+                          All subscriptions ever purchased
                         </p>
                       </div>
                     </CardContent>
