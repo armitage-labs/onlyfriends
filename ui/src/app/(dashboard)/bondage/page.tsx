@@ -328,7 +328,7 @@ export default function HomePage() {
                   </CardContent>
                 </Card>
               </div>
-              <Card>
+              <Card className="m-5">
                 <CardHeader>
                   <CardTitle>Bondage Curve - {tokenSettings?.token_symbol} Price</CardTitle>
                   <CardDescription>{tokenSettings?.token_name} price in USDc </CardDescription>
