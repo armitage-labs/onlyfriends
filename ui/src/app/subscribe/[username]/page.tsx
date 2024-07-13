@@ -7,9 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { publicClient } from "@/utils/viemClient";
+import { DynamicWidget, useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import { TokenSettings, Users } from "@prisma/client";
+import { encodeFunctionData } from "viem"
 import axios from "axios";
+import { Network, Alchemy } from "alchemy-sdk";
 import { useEffect, useState } from "react";
+import {
+  Account,
+  Chain,
+  Hex,
+  Transport,
+  WalletClient,
+  PublicClient,
+  parseEther,
+} from "viem";
+import { UsdcAbi } from "@/abis/usdc";
 
 
 interface PageProps {
@@ -21,6 +34,18 @@ export default function SubscriptionPage({ params }: PageProps) {
   const [user, setUser] = useState<Users | null>(null);
   const [tokenSettings, setTokenSettings] = useState<TokenSettings>();
   const [tokenUsdcRate, setTokenUsdcRate] = useState<string>();
+  const [purchaseAmount, setPurchaseAmount] = useState<string>();
+  const { walletConnector } = useDynamicContext();
+  const { primaryWallet } = useDynamicContext();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_APIKEY || "";
+
+  const settings = {
+    apiKey: alchemyApiKey,
+    network: Network.BASE_SEPOLIA // TODO from token settings
+  }
+  const alchemy = new Alchemy(settings);
 
   useEffect(() => {
     handleFetchUserDetails();
@@ -31,13 +56,31 @@ export default function SubscriptionPage({ params }: PageProps) {
   }, [user]);
 
   useEffect(() => {
-    handleGetCreatorTokenPrice();
+    if (tokenSettings != null) {
+      handleGetCreatorTokenPrice();
+    }
   }, [tokenSettings]);
+
+  useEffect(() => {
+    if (tokenSettings != null && walletConnector != null) {
+      handleSwitchNetwork();
+    }
+  }, [tokenSettings, walletConnector]);
 
   const handleFetchUserDetails = async () => {
     const { data } = await axios.get(`/api/users?username=${username}`);
     if (data.success) {
       setUser(data.user);
+    }
+  }
+
+  const handleSwitchNetwork = async () => {
+    if (walletConnector != null && tokenSettings != null && walletConnector.getNetwork() != null) {
+      const chainIdString: string = tokenSettings.chain_id.split(":")[1];
+      const chainIdNumber: number = parseInt(chainIdString);
+      if (parseInt((await walletConnector.getNetwork()) as string) != chainIdNumber) {
+        await walletConnector.switchNetwork({ networkChainId: chainIdNumber });
+      }
     }
   }
 
@@ -58,17 +101,76 @@ export default function SubscriptionPage({ params }: PageProps) {
     }
   }
 
+  const handleBuyToken = async (amount: number) => {
+    if (primaryWallet == null) return;
+    const provider = await primaryWallet.connector.getSigner<WalletClient<Transport, Chain, Account>>();
+    const data = encodeFunctionData({
+      abi: BondageCurveAbi,
+      functionName: "purchaseTokens",
+      args: [BigInt(amount * 1000000)]
+    })
+
+    console.log(primaryWallet.address.slice(2));
+    console.log(tokenSettings?.token_address.slice(2));
+    setIsLoading(true);
+    await handleApproveUsdcAllowance();
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: `0x${primaryWallet.address.slice(2)}`,
+          to: `0x${tokenSettings?.token_address.slice(2)}`,
+          data: data
+        }
+      ]
+    });
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    console.log(txReceipt);
+    setIsLoading(false);
+
+  }
+
+  const handleApproveUsdcAllowance = async () => {
+
+    if (primaryWallet == null) return;
+    const provider = await primaryWallet.connector.getSigner<WalletClient<Transport, Chain, Account>>();
+
+    const data = encodeFunctionData({
+      abi: UsdcAbi,
+      functionName: "approve",
+      args: [`0x${tokenSettings?.token_address.slice(2)}`, 1010000000000000n]
+    })
+
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: `0x${primaryWallet.address.slice(2)}`,
+          to: `0x036CbD53842c5426634e7929541eC2318f3dCF7e`, // todo need to come from config
+          data: data
+        }
+      ]
+    });
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    console.log("Allowance approved");
+    console.log(txReceipt);
+  }
+
   return (
     <>
       {(user && tokenSettings) ? (
 
         <div>
-
           <div className="flex flex-col min-h-[100dvh]">
             <header className="bg-gray-100 dark:bg-gray-800 py-8">
+              <div className="absolute top-5 right-5">
+                <DynamicWidget />
+              </div>
               <div className="container px-4 md:px-6 flex flex-col items-center text-center">
                 <Avatar className="h-20 w-20 mb-4">
-                  <AvatarImage src={user.profile_pic || ""} />
+                  <AvatarImage className="w-full h-full object-cover object-center" src={user.profile_pic || ""} />
                   <AvatarFallback>{user?.username?.slice(0, 2)}</AvatarFallback>
                 </Avatar>
                 <h1 className="text-2xl font-bold">{user.username || user.display_name}</h1>
@@ -76,6 +178,7 @@ export default function SubscriptionPage({ params }: PageProps) {
                   {user.bio}
                 </p>
               </div>
+
             </header>
             <main className="container px-4 md:px-6 py-8">
 
@@ -183,15 +286,15 @@ export default function SubscriptionPage({ params }: PageProps) {
 
                   <div className="pt-3 flex flex-row space-x-3">
                     <Button
-                    // disabled={!(purchaseAmount && Number(purchaseAmount) > 0) || isLoading}
-                    // onClick={() => handlePurchaseTokens(Number(purchaseAmount))}
+                      disabled={!(purchaseAmount && Number(purchaseAmount) > 0)}
+                      onClick={() => handleBuyToken(Number(purchaseAmount))}
                     >Purchase Tokens (Input USDc amount)</Button>
                     <Input
                       type="number"
                       placeholder="Amount"
-                    // onChange={(event) =>
-                    //   setPurchaseAmount(event.target.value)
-                    // }
+                      onChange={(event) =>
+                        setPurchaseAmount(event.target.value)
+                      }
                     ></Input>
                   </div>
                 </div>

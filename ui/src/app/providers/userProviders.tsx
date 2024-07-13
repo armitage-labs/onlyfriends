@@ -1,21 +1,16 @@
 import { PrivyProvider } from '@privy-io/react-auth';
+import { DynamicContextProvider, DynamicWidget } from '@dynamic-labs/sdk-react-core';
+import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 
 export default function UserProviders({ children }: { children: React.ReactNode }) {
   return (
-    <PrivyProvider
-      appId="clykbmdo603o5vjv0zi5eccsp"
-      config={{
-        // Create embedded wallets for users who don't have a wallet
-        // loginMethods: [
-        //   'farcaster',
-        // ],
-        // loginMethodsAndOrder: []
-        embeddedWallets: {
-          createOnLogin: 'users-without-wallets',
-        },
-      }}
-    >
+
+    <DynamicContextProvider
+      settings={{
+        environmentId: '6f19c952-e142-4ffa-bbca-8746fff8c4ac',
+        walletConnectors: [EthereumWalletConnectors],
+      }}>
       {children}
-    </PrivyProvider>
+    </DynamicContextProvider>
   );
 }
