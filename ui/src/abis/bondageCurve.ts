@@ -617,6 +617,19 @@ export const BondageCurveAbi = [
   },
   {
     "inputs": [],
+    "name": "totalBurnedTokens",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "totalContractBalance",
     "outputs": [
       {
@@ -631,6 +644,19 @@ export const BondageCurveAbi = [
   {
     "inputs": [],
     "name": "totalMintedTokens",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalSubscriptionsPurchased",
     "outputs": [
       {
         "internalType": "uint256",

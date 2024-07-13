@@ -12,6 +12,8 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 	uint256 public contentCreatorBalance;
 	uint256 public totalContractBalance;
 	uint256 public totalMintedTokens;
+	uint256 public totalBurnedTokens;
+	uint256 public totalSubscriptionsPurchased;
 	uint256 public constant reserveRatio = 1000000; // Reserve ratio in ppm (parts per million)
 	uint256 public constant supply = 1000000; // Total supply of tokens
 	uint256 public constant fixedSubscriptionPrice = 25000000; // in usdc without decimals
@@ -41,7 +43,7 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 		address from,
 		address to,
 		uint256 value
-	) internal override(ERC20, ERC20Pausable) onlyOwner {
+	) internal override(ERC20, ERC20Pausable) {
 		super._update(from, to, value);
 	}
 
@@ -131,6 +133,9 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 		);
 
 		_burn(msg.sender, subscriptionPriceInTokens);
+
+		totalBurnedTokens += subscriptionPriceInTokens;
+		totalSubscriptionsPurchased += 1;
 
 		emit TokensBurned(subscriptionPriceInTokens);
 		emit SubscriptionPurchased(msg.sender);

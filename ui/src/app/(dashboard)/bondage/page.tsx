@@ -214,7 +214,7 @@ export default function HomePage() {
       params: [
         {
           from: connectedWalletAddress,
-          to: "0xB211435fdfcA106088Fcd6DDf92a4eCDb3D262f7",
+          to: "0x6be62d751671a2974AebEc4Ff240C5A8BcF77633",
           data: data,
         }
       ]
