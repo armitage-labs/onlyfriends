@@ -28,7 +28,7 @@ const MAINNET_RPC_URL = process.env.MAINNET_RPC_URL || "https://eth-mainnet.g.al
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "https://eth-sepolia.g.alchemy.com/v2/your-api-key"
 const MATIC_RPC_URL = process.env.MATIC_RPC_URL || "https://polygon-mainnet.g.alchemy.com/v2/your-api-key"
 const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL || "https://polygon-mumbai.g.alchemy.com/v2/v3/your-api-key"
-const BASE_SEPOLIA_RPC_URL = process.env.BASE_SEPOLIA_RPC_URL || "https://base-sepolia.g.alchemy.com/v2/oCc1sE76h91d0-STTYmZTBk77xgTA1rR"
+const BASE_SEPOLIA_RPC_URL = process.env.BASE_SEPOLIA_RPC_URL || "https://base-sepolia.g.alchemy.com/v2/your-api-key"
 
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "api-key"
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "api-key"

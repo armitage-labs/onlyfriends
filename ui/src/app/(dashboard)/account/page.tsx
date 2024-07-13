@@ -249,7 +249,7 @@ export default function HomePage() {
       params: [
         {
           from: connectedWalletAddress,
-          to: "0x9BA85d1Abc5cE9b12b54825944e145a5c6ceb4E9",
+          to: "0xB211435fdfcA106088Fcd6DDf92a4eCDb3D262f7",
           data: data,
         }
       ]
@@ -284,7 +284,7 @@ export default function HomePage() {
           <div>
             {`Bondage Curve deployed at address: 0x${deployedBondageCurveAddress}`}
             <div>Balance to Withdrawal: {Number(creatorBalanceAvailable) / 1000000}</div>
-            <div>Subscription Price in creator tokens: {Number(subscriptionPrice)} GBC</div>
+            <div>Subscription Price in creator tokens: {Number(subscriptionPrice) / 1000000} GBC</div>
             <div>1 $USDc = ${(Number(tokenUsdcRate) / 1000000)} GBC</div>
             <div>1 $GBC = ${1 / (Number(tokenUsdcRate) / 1000000)} USDc</div>
             <div>Your token balance: ${Number(userTokenBalance) / 1000000} GBC</div>

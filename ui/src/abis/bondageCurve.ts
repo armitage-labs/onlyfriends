@@ -467,7 +467,7 @@ export const BondageCurveAbi = [
         "type": "uint8"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {

@@ -14,7 +14,7 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 	uint256 public totalMintedTokens;
 	uint256 public constant reserveRatio = 1000000; // Reserve ratio in ppm (parts per million)
 	uint256 public constant supply = 1000000; // Total supply of tokens
-	uint256 public constant fixedSubscriptionPrice = 25; // in usdc without decimals
+	uint256 public constant fixedSubscriptionPrice = 25000000; // in usdc without decimals
 	address public contentCreatorAddress;
 	IERC20 public usdc;
 
