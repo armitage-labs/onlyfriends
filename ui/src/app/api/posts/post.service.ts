@@ -14,7 +14,7 @@ export async function fetchPostFrames(
 ): Promise<PostsFrames | null> {
   return await prisma.postsFrames.findFirst({
     where: {
-      id: postId,
+      post_id: postId,
     },
   });
 }
