@@ -14,7 +14,7 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 	uint256 public totalMintedTokens;
 	uint256 public constant reserveRatio = 1000000; // Reserve ratio in ppm (parts per million)
 	uint256 public constant supply = 1000000; // Total supply of tokens
-	uint256 public constant fixedSubscriptionPrice = 25; // in usdc
+	uint256 public constant fixedSubscriptionPrice = 25; // in usdc without decimals
 	address public contentCreatorAddress;
 	IERC20 public usdc;
 
@@ -63,6 +63,10 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 		_unpause();
 	}
 
+	function decimals() public pure override returns (uint8) {
+		return 6;
+	}
+
 	function creatorBalanceWithdrawal() external onlyCreator {
 		require(
 			contentCreatorBalance > 0,
@@ -89,6 +93,7 @@ contract BondageCurve is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
 			"Must have USDc to purchase tokens"
 		);
 
+		//remove this later
 		require(
 			usdc.allowance(msg.sender, address(this)) > usdcAmount,
 			"Not enough allowance to purchase tokens"

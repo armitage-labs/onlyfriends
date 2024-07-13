@@ -12,11 +12,14 @@ import { Button } from "@/components/ui/button";
 import { publicClient } from "@/utils/viemClient";
 import { BondageCurveAbi } from "@/abis/bondageCurve";
 import { Input } from "@/components/ui/input";
+import { UsdcAbi } from "@/abis/usdc";
 
 export default function HomePage() {
 
+  const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_APIKEY || "";
+
   const settings = {
-    apiKey: "oCc1sE76h91d0-STTYmZTBk77xgTA1rR",
+    apiKey: alchemyApiKey,
     network: Network.BASE_SEPOLIA
   }
   const alchemy = new Alchemy(settings);
@@ -32,6 +35,9 @@ export default function HomePage() {
   const [creatorBalanceAvailable, setCreatorBalanceAvailable] = useState<string>();
   const [subscriptionPrice, setSubscriptionPrice] = useState<string>();
   const [purchaseAmount, setPurchaseAmount] = useState<string>();
+  const [allowanceApproved, setAllowanceApproved] = useState<boolean>(false);
+  const [tokenUsdcRate, setTokenUsdcRate] = useState<string>();
+  const [userTokenBalance, setUserTokenBalance] = useState<string>();
 
   const [connectedChainId, setConnectedChainId] = useState<string>();
   useEffect(() => {
@@ -59,6 +65,8 @@ export default function HomePage() {
     if (deployedBondageCurveAddress) {
       handleFetchCreatorBalance();
       handleGetSubscriptionPrice();
+      handleGetCreatorTokenPrice();
+      handleUserTokenBalance();
     }
   });
 
@@ -74,6 +82,74 @@ export default function HomePage() {
     setCreatorBalanceAvailable(String(data));
   }
 
+  const handleUserTokenBalance = async () => {
+    if (!connectedWallet || !connectedWalletAddress) return;
+    const data = await publicClient.readContract({
+      address: `0x${deployedBondageCurveAddress}`,
+      abi: BondageCurveAbi,
+      functionName: "balanceOf",
+      args: [connectedWalletAddress]
+    })
+    console.log("User token balance:", data);
+    setUserTokenBalance(String(data));
+  }
+
+  const handleApproveCreatorTokenAllowance = async () => {
+    if (!connectedWallet || !connectedWalletAddress) return;
+
+    const provider = await connectedWallet?.getEthereumProvider();
+
+    const data = encodeFunctionData({
+      abi: BondageCurveAbi,
+      functionName: "approve",
+      args: [`0x${deployedBondageCurveAddress}`, 100000000000n]
+    });
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: connectedWalletAddress,
+          to: `0x${deployedBondageCurveAddress}`,
+          data: data
+        }
+      ]
+    });
+
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    console.log("Content Creator token allowance approved");
+    console.log(txReceipt);
+  }
+
+  const handleApproveUsdcAllowance = async () => {
+    if (!connectedWallet || !connectedWalletAddress) return;
+
+    const provider = await connectedWallet?.getEthereumProvider();
+
+    const data = encodeFunctionData({
+      abi: UsdcAbi,
+      functionName: "approve",
+      // args: [usdcAmount]
+      //101000000
+      args: [`0x${deployedBondageCurveAddress}`, 1010000000000000n]
+    })
+
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: connectedWalletAddress,
+          to: `0x036CbD53842c5426634e7929541eC2318f3dCF7e`,
+          data: data
+        }
+      ]
+    });
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    console.log("Allowance approved");
+    console.log(txReceipt);
+  }
+
   const handlePurchaseTokens = async (usdcAmount: number) => {
     if (!connectedWallet || !connectedWalletAddress) return;
 
@@ -82,11 +158,13 @@ export default function HomePage() {
     const data = encodeFunctionData({
       abi: BondageCurveAbi,
       functionName: "purchaseTokens",
-      // args: [usdcAmount]
-      args: [25n]
+      args: [BigInt(usdcAmount * 1000000)]
+      //101000000
+      // args: [3000000n]
     })
 
     setIsLoading(true);
+    await handleApproveUsdcAllowance();
     const transactionHash = await provider.request({
       method: "eth_sendTransaction",
       params: [
@@ -100,6 +178,18 @@ export default function HomePage() {
     await alchemy.core.waitForTransaction(transactionHash);
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     console.log(txReceipt);
+    setIsLoading(false);
+  }
+
+  const handleGetCreatorTokenPrice = async () => {
+    const data = await publicClient.readContract({
+      address: `0x${deployedBondageCurveAddress}`,
+      abi: BondageCurveAbi,
+      functionName: "calculatePurchaseReturnPrice",
+      args: [1000000n]
+    })
+    console.log("1USDC = ", data);
+    setTokenUsdcRate(String(data));
   }
 
   const handleGetSubscriptionPrice = async () => {
@@ -112,9 +202,32 @@ export default function HomePage() {
     setSubscriptionPrice(String(data));
   }
 
+
   const handlePurchaseSubscription = async () => {
     if (!connectedWallet || !connectedWalletAddress) return;
     const provider = await connectedWallet?.getEthereumProvider();
+
+    await handleApproveCreatorTokenAllowance();
+    const data = encodeFunctionData({
+      abi: BondageCurveAbi,
+      functionName: "purchaseSubscription",
+    });
+
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: connectedWalletAddress,
+          to: `0x${deployedBondageCurveAddress}`,
+          data: data
+        }
+      ]
+    });
+
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    console.log(txReceipt);
+    console.log("Subscription purchased");
   }
 
   const handleDeployBondageCurve = async () => {
@@ -170,13 +283,16 @@ export default function HomePage() {
         {deployedBondageCurveAddress ? (
           <div>
             {`Bondage Curve deployed at address: 0x${deployedBondageCurveAddress}`}
-            <div>Balance to Withdrawal: {creatorBalanceAvailable}</div>
-            <div>Subscription Price in creator tokens: {subscriptionPrice} USDC</div>
+            <div>Balance to Withdrawal: {Number(creatorBalanceAvailable) / 1000000}</div>
+            <div>Subscription Price in creator tokens: {Number(subscriptionPrice)} GBC</div>
+            <div>1 $USDc = ${(Number(tokenUsdcRate) / 1000000)} GBC</div>
+            <div>1 $GBC = ${1 / (Number(tokenUsdcRate) / 1000000)} USDc</div>
+            <div>Your token balance: ${Number(userTokenBalance) / 1000000} GBC</div>
             <div className="pt-3 flex flex-row space-x-3">
               <Button
                 disabled={!(purchaseAmount && Number(purchaseAmount) > 0) || isLoading}
                 onClick={() => handlePurchaseTokens(Number(purchaseAmount))}
-              >Purchase Tokens</Button>
+              >Purchase Tokens (Input USDc amount)</Button>
               <Input
                 type="number"
                 placeholder="Amount"
@@ -184,6 +300,12 @@ export default function HomePage() {
                   setPurchaseAmount(event.target.value)
                 }
               ></Input>
+            </div>
+            <div className="pt-3">
+              <Button
+                disabled={isLoading}
+                onClick={handlePurchaseSubscription}
+              >Purchase Subscription</Button>
             </div>
           </div>
         ) : null}
