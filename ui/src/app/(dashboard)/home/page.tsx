@@ -131,7 +131,7 @@ export default function HomePage() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {contentCreatorBalanceAvailable} USDc
+                      {Number(contentCreatorBalanceAvailable) / 1000000} USDc
                     </div>
                     <div className="flex justify-between">
                       <p className="pt-1 text-xs text-muted-foreground">
@@ -148,7 +148,7 @@ export default function HomePage() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      1 {tokenSettings.token_symbol} = {(Number(tokenUsdcRate) / 1000000)} USDc
+                      1 {tokenSettings.token_symbol} = {Number(1 / (Number(tokenUsdcRate) / 1000000)).toFixed(3)} USDc
                     </div>
                     <div className="flex justify-between">
                       <p className="pt-1 text-xs text-muted-foreground">
