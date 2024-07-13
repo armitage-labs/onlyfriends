@@ -45,12 +45,16 @@ import {
   GitPullRequest,
   GitPullRequestArrow,
   GitFork,
+  HeartPulse,
   ThumbsUp,
+  HandHeart,
   BookUser,
   X,
   GitCompare,
   FolderRoot,
   FolderTree,
+  PiggyBank,
+  Coins,
   Send,
 } from "lucide-react";
 
@@ -58,7 +62,11 @@ export type Icon = LucideIcon;
 
 export const Icons = {
   send: Send,
+  coins: Coins,
+  piggyBank: PiggyBank,
   dashboard: LayoutDashboardIcon,
+  handHeart: HandHeart,
+  heartPulse: HeartPulse,
   gitBranch: GitBranch,
   messageCircleHeart: MessageCircleHeart,
   messagesSquare: MessagesSquare,

@@ -19,7 +19,7 @@ export default function DashboardLayout({
       <div className="flex h-screen">
         <Sidebar />
         <main className="h-screen w-full">
-          <div className="pt-6">
+          <div className="">
             {children}
           </div>
         </main>

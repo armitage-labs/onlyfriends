@@ -10,8 +10,14 @@ export const signedInNavItems: NavItem[] = [
   {
     title: "Posts",
     href: "/posts",
-    icon: "send",
+    icon: "handHeart",
     label: "posts",
+  },
+  {
+    title: "Bondage",
+    href: "/bondage",
+    icon: "heartHandshake",
+    label: "bondage"
   },
   {
     title: "Account",
