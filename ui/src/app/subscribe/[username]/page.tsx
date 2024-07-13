@@ -26,6 +26,12 @@ interface PageProps {
   params: { username: string };
 }
 
+interface StatsDto {
+  success: boolean;
+  posts: number;
+  lastPost: Date | null;
+}
+
 export default function SubscriptionPage({ params }: PageProps) {
   const username = params.username;
   const [user, setUser] = useState<Users | null>(null);
@@ -33,11 +39,13 @@ export default function SubscriptionPage({ params }: PageProps) {
   const [tokenUsdcRate, setTokenUsdcRate] = useState<string>();
   const [purchaseAmount, setPurchaseAmount] = useState<string>();
   const [activeSubscription, setActiveSubscription] = useState<Invoices>();
+  const [subscriptions, setSubscriptions] = useState<Invoices[]>([]);
   const { walletConnector } = useDynamicContext();
   const { primaryWallet } = useDynamicContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userTokenBalance, setUserTokenBalance] = useState<string>();
   const [subscriptionPrice, setSubscriptionPrice] = useState<string>();
+  const [stats, setStats] = useState<StatsDto>();
 
   const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_APIKEY || "";
 
@@ -58,6 +66,8 @@ export default function SubscriptionPage({ params }: PageProps) {
   useEffect(() => {
     if (tokenSettings != null) {
       handleGetCreatorTokenPrice();
+      handleFetchUserSubscriptions();
+      handleFetchUserStats();
     }
   }, [tokenSettings]);
 
@@ -74,6 +84,20 @@ export default function SubscriptionPage({ params }: PageProps) {
     const { data } = await axios.get(`/api/users?username=${username}`);
     if (data.success) {
       setUser(data.user);
+    }
+  }
+
+  const handleFetchUserSubscriptions = async () => {
+    const { data } = await axios.get(`/api/subscriptions/all?username=${username}`);
+    if (data.success) {
+      setSubscriptions(data.invoices);
+    }
+  }
+
+  const handleFetchUserStats = async () => {
+    const { data } = await axios.get(`/api/posts/stats?username=${username}`);
+    if (data.success) {
+      setStats(data)
     }
   }
 
@@ -351,15 +375,15 @@ export default function SubscriptionPage({ params }: PageProps) {
                       <div className="mt-2 space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Subscribers</span>
-                          <span className="font-medium text-foreground">4</span>
+                          <span className="font-medium text-foreground">{subscriptions?.length ?? 0}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Number of posts</span>
-                          <span className="font-medium text-foreground">23</span>
+                          <span className="font-medium text-foreground">{stats?.posts ?? 0}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Last Post</span>
-                          <span className="font-medium text-primary-500">{new Date(Date.now()).toLocaleString()}</span>
+                          <span className="font-medium text-primary-500">{stats?.lastPost?.toLocaleString() ?? "N/A"}</span>
                         </div>
                       </div>
                     </div>

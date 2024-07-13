@@ -29,6 +29,29 @@ export async function fetchActiveSubscription(
   });
 }
 
+export async function fetchAllActiveSubscription(
+  creator: string
+): Promise<Invoices[] | null> {
+  const user = await fetchUserByUserNameOrId(creator);
+
+  if (user == null) {
+    return null;
+  }
+
+  const currentDate = new Date();
+  return await prisma.invoices.findMany({
+    where: {
+      user_id: user.id,
+      start_time: {
+        lte: currentDate, // Less than or equal to current date/time
+      },
+      end_time: {
+        gte: currentDate, // Greater than or equal to current date/time
+      },
+    },
+  });
+}
+
 export async function createActiveSubscription(
   createSubscriptionDto: CreateSubscriptionDto
 ): Promise<Invoices | null> {

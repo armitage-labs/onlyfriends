@@ -18,3 +18,17 @@ export async function fetchPostFrames(
     },
   });
 }
+
+export async function fetchPosts(userId: string) {
+  return await prisma.posts.findMany({
+    where: {
+      user_id: userId,
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+    include: {
+      postsFrames: true,
+    },
+  });
+}

@@ -14,8 +14,6 @@ export async function GET(req: NextRequest) {
     wallet.toLocaleLowerCase(),
   ]);
 
-  console.log(activeSubscription);
-
   if (activeSubscription == null) {
     return NextResponse.json({
       success: false,
