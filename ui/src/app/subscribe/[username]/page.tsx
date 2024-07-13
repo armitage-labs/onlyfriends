@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { publicClient } from "@/utils/viemClient";
 import { DynamicWidget, useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import { TokenSettings, Users } from "@prisma/client";
+import { Invoices, TokenSettings, Users } from "@prisma/client";
 import { encodeFunctionData } from "viem"
 import axios from "axios";
 import { Network, Alchemy } from "alchemy-sdk";
@@ -16,11 +16,8 @@ import { useEffect, useState } from "react";
 import {
   Account,
   Chain,
-  Hex,
   Transport,
   WalletClient,
-  PublicClient,
-  parseEther,
 } from "viem";
 import { UsdcAbi } from "@/abis/usdc";
 
@@ -35,6 +32,7 @@ export default function SubscriptionPage({ params }: PageProps) {
   const [tokenSettings, setTokenSettings] = useState<TokenSettings>();
   const [tokenUsdcRate, setTokenUsdcRate] = useState<string>();
   const [purchaseAmount, setPurchaseAmount] = useState<string>();
+  const [activeSubscription, setActiveSubscription] = useState<Invoices>();
   const { walletConnector } = useDynamicContext();
   const { primaryWallet } = useDynamicContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -64,6 +62,7 @@ export default function SubscriptionPage({ params }: PageProps) {
   useEffect(() => {
     if (tokenSettings != null && walletConnector != null) {
       handleSwitchNetwork();
+      handleFetchActiveSubscription();
     }
   }, [tokenSettings, walletConnector]);
 
@@ -71,6 +70,25 @@ export default function SubscriptionPage({ params }: PageProps) {
     const { data } = await axios.get(`/api/users?username=${username}`);
     if (data.success) {
       setUser(data.user);
+    }
+  }
+
+  const handleFetchActiveSubscription = async () => {
+    if (primaryWallet == null) return;
+    const { data } = await axios.get(`/api/subscriptions?username=${username}&wallet=0x${primaryWallet.address.slice(2)}`);
+    if (data.success) {
+      setActiveSubscription(data.invoice);
+    }
+  }
+
+  const handleCreatesSubscription = async (txid: string, creator: string, walletAddress: string) => {
+    const { data } = await axios.post(`/api/subscriptions`, {
+      txid: txid,
+      creator: username,
+      walletAddress: walletAddress,
+    });
+    if (data.success) {
+      setActiveSubscription(data.invoice);
     }
   }
 
@@ -101,17 +119,15 @@ export default function SubscriptionPage({ params }: PageProps) {
     }
   }
 
-  const handleBuyToken = async (amount: number) => {
+  const handlePurchaseTokens = async (usdcAmount: number) => {
     if (primaryWallet == null) return;
     const provider = await primaryWallet.connector.getSigner<WalletClient<Transport, Chain, Account>>();
     const data = encodeFunctionData({
       abi: BondageCurveAbi,
       functionName: "purchaseTokens",
-      args: [BigInt(amount * 1000000)]
+      args: [BigInt(usdcAmount * 1000000)]
     })
 
-    console.log(primaryWallet.address.slice(2));
-    console.log(tokenSettings?.token_address.slice(2));
     setIsLoading(true);
     await handleApproveUsdcAllowance();
     const transactionHash = await provider.request({
@@ -128,11 +144,38 @@ export default function SubscriptionPage({ params }: PageProps) {
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     console.log(txReceipt);
     setIsLoading(false);
+  }
 
+  const handlePurchaseSubscription = async () => {
+    if (primaryWallet == null) return;
+    const provider = await primaryWallet.connector.getSigner<WalletClient<Transport, Chain, Account>>();
+    await handleApproveCreatorTokenAllowance();
+
+    const data = encodeFunctionData({
+      abi: BondageCurveAbi,
+      functionName: "purchaseSubscription",
+    });
+
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: `0x${primaryWallet.address.slice(2)}`,
+          to: `0x${tokenSettings?.token_address.slice(2)}`,
+          data: data
+        }
+      ]
+    });
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    console.log(txReceipt);
+    if (txReceipt?.transactionHash != null) {
+      handleCreatesSubscription(txReceipt?.transactionHash, username, `0x${primaryWallet.address.slice(2)}`)
+      console.log("Subscription purchased");
+    }
   }
 
   const handleApproveUsdcAllowance = async () => {
-
     if (primaryWallet == null) return;
     const provider = await primaryWallet.connector.getSigner<WalletClient<Transport, Chain, Account>>();
 
@@ -155,6 +198,30 @@ export default function SubscriptionPage({ params }: PageProps) {
     await alchemy.core.waitForTransaction(transactionHash);
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     console.log("Allowance approved");
+    console.log(txReceipt);
+  }
+
+  const handleApproveCreatorTokenAllowance = async () => {
+    if (primaryWallet == null) return;
+    const provider = await primaryWallet.connector.getSigner<WalletClient<Transport, Chain, Account>>();
+    const data = encodeFunctionData({
+      abi: BondageCurveAbi,
+      functionName: "approve",
+      args: [`0x${tokenSettings?.token_address.slice(2)}`, 100000000000n]
+    });
+    const transactionHash = await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: `0x${primaryWallet.address.slice(2)}`,
+          to: `0x${tokenSettings?.token_address.slice(2)}`,
+          data: data
+        }
+      ]
+    });
+    await alchemy.core.waitForTransaction(transactionHash);
+    const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
+    console.log("Content Creator token allowance approved");
     console.log(txReceipt);
   }
 
@@ -233,7 +300,7 @@ export default function SubscriptionPage({ params }: PageProps) {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Price</span>
-                          <span className="font-medium text-green-500">${(Number(tokenUsdcRate) / 1000000)} USDc</span>
+                          <span className="font-medium text-green-500">${Number(1 / (Number(tokenUsdcRate) / 1000000)).toFixed(3)} USDc</span>
                         </div>
                       </div>
                     </div>
@@ -287,7 +354,7 @@ export default function SubscriptionPage({ params }: PageProps) {
                   <div className="pt-3 flex flex-row space-x-3">
                     <Button
                       disabled={!(purchaseAmount && Number(purchaseAmount) > 0)}
-                      onClick={() => handleBuyToken(Number(purchaseAmount))}
+                      onClick={() => handlePurchaseTokens(Number(purchaseAmount))}
                     >Purchase Tokens (Input USDc amount)</Button>
                     <Input
                       type="number"
@@ -314,8 +381,12 @@ export default function SubscriptionPage({ params }: PageProps) {
                       </div>
                     </div>
                   </div>
-                  <Button variant="default" className="mt-4 w-full">
-                    Subscribe
+                  <Button disabled={activeSubscription != null} onClick={() => handlePurchaseSubscription()} variant="default" className="mt-4 w-full">
+                    {(activeSubscription == null) ? (
+                      <>Subscribe</>
+                    ) : (
+                      <>Subscribe Active</>
+                    )}
                   </Button>
                 </div>
 

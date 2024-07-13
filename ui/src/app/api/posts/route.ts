@@ -7,28 +7,7 @@ import prisma from "db";
 
 export async function GET(req: NextRequest) {
   const providerId = req.nextUrl.searchParams.get("providerId");
-  // process.env.PRIVY_APP_ID!,
-  // process.env.PRIVY_TOKEN_SECRET!
   await isAuthenticated2(req);
-
-  // const response = await fetch(
-  //   "https://auth.privy.io/api/v1/users/farcaster/refresh",
-  //   {
-  //     method: "POST",
-  //     body: JSON.stringify({
-  //       fid: 772525,
-  //     }),
-  //     headers: {
-  //       Authorization: `Basic ${btoa(
-  //         `${process.env.PRIVY_APP_ID!}:${process.env.PRIVY_TOKEN_SECRET!}`
-  //       )}`,
-  //       "privy-app-id": process.env.PRIVY_APP_ID!,
-  //       "content-type": "application/json",
-  //     },
-  //   }
-  // );
-  // console.log(await response.json());
-
   if (!isAuthenticated2(req) || providerId == null) {
     return NextResponse.json({
       success: false,

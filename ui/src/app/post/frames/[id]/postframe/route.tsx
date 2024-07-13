@@ -42,7 +42,7 @@ async function createFrameHidden(req: NextRequest, user: Users, post: Posts) {
     return await frames(async (ctx) => {
         const custodyAddress = ctx.message?.requesterCustodyAddress ?? "";
         const verifiedAddresses = ctx.message?.requesterVerifiedAddresses ?? [];
-        const activeSubscryption = await fetchActiveSubscription([custodyAddress, ...verifiedAddresses]);
+        const activeSubscryption = await fetchActiveSubscription(slug, [custodyAddress, ...verifiedAddresses]);
 
         if (activeSubscryption != null) {
             return {
