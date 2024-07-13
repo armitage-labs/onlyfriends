@@ -1,3 +1,5 @@
+"use client";
+
 import { PrivyProvider } from '@privy-io/react-auth';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -9,9 +11,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                 loginMethods: [
                     'farcaster'
                 ],
-                // embeddedWallets: {
-                //     createOnLogin: 'users-without-wallets',
-                // },
+                embeddedWallets: {
+                    createOnLogin: 'users-without-wallets',
+                },
             }}
         >
             {children}

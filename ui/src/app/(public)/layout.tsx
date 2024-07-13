@@ -1,10 +1,12 @@
+"use client";
+
 import type { Metadata } from "next";
 import "../globals.css";
 
-export const metadata: Metadata = {
-    title: "Sign In",
-    description: "Create your account",
-};
+// export const metadata: Metadata = {
+//     title: "Sign In",
+//     description: "Create your account",
+// };
 
 export default function PublicLayout({
     children,

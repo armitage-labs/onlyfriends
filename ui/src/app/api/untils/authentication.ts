@@ -19,6 +19,12 @@ export function isAuthenticated(req: NextRequest): boolean {
   }
 }
 
+export async function isAuthenticated2(req: NextRequest) {
+  const token = getUserToken(req);
+  const claims = await verifyAuthToken(token!);
+  // console.log(claims);
+}
+
 export function getUserToken(req: NextRequest): string | undefined {
   return req.cookies.get("privy-token")?.value;
 }
