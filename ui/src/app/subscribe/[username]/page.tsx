@@ -259,21 +259,27 @@ export default function SubscriptionPage({ params }: PageProps) {
                     <div className="mt-6 text-left">
                       <div className="mt-2 space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Plan</span>
-                          <span className="font-medium text-foreground">Frend</span>
-                        </div>
-                        <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Price</span>
                           <span className="font-medium text-foreground">$25.00/month</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Status</span>
-                          <span className="font-medium text-green-500">Active</span>
+
+                          {(activeSubscription == null) ? (
+                            <span className="font-medium text-red-500">Not Subscribed</span>
+                          ) : (
+                            <span className="font-medium text-green-500">Active</span>
+                          )}
+
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Expires</span>
                           <span className="font-medium text-foreground">
-                            {new Date(new Date(Date.now()).setMonth(new Date(Date.now()).getMonth() + 1)).toLocaleString()}
+                            {(activeSubscription == null) ? (
+                              <>N/A</>
+                            ) : (
+                              <>{activeSubscription?.end_time?.toLocaleString()}</>
+                            )}
                           </span>
                         </div>
                       </div>
@@ -340,25 +346,15 @@ export default function SubscriptionPage({ params }: PageProps) {
 
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <div className="text-xl font-semibold mb-4">Purchase Tokens</div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium">Subscription Type</div>
-                      {/* <Badge>Pro</Badge> */}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium">Renewal Date</div>
-                      <div className="text-sm">2024-12-31</div>
-                    </div>
-                  </div>
-
                   <div className="pt-3 flex flex-row space-x-3">
                     <Button
-                      disabled={!(purchaseAmount && Number(purchaseAmount) > 0)}
+                      disabled={(!(purchaseAmount && Number(purchaseAmount) > 0) || primaryWallet == null)}
                       onClick={() => handlePurchaseTokens(Number(purchaseAmount))}
                     >Purchase Tokens (Input USDc amount)</Button>
                     <Input
                       type="number"
                       placeholder="Amount"
+                      disabled={primaryWallet == null}
                       onChange={(event) =>
                         setPurchaseAmount(event.target.value)
                       }
@@ -369,19 +365,7 @@ export default function SubscriptionPage({ params }: PageProps) {
 
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <div className="text-xl font-semibold mb-4">Purchase Subscription</div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium">Subscription Type</div>
-                      {/* <Badge>Pro</Badge> */}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium">Expiry Date</div>
-                      <div className="text-sm">
-                        {new Date(new Date(Date.now()).setMonth(new Date(Date.now()).getMonth() + 1)).toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                  <Button disabled={activeSubscription != null} onClick={() => handlePurchaseSubscription()} variant="default" className="mt-4 w-full">
+                  <Button disabled={activeSubscription != null || primaryWallet == null} onClick={() => handlePurchaseSubscription()} variant="default" className="mt-4 w-full">
                     {(activeSubscription == null) ? (
                       <>Subscribe</>
                     ) : (
