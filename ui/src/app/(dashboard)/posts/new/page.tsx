@@ -12,20 +12,23 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { PutBlobResult } from "@vercel/blob"
-import Image from "next/image"
 import { Textarea } from "@/components/ui/textarea";
+import Image from "next/image"
 import axios from "axios";
 
 export default function NewPost() {
     const router = useRouter();
     const { ready, authenticated, user } = usePrivy();
 
+    const [posting, setPosting] = useState<boolean>(false);
     const [text, setText] = useState<string>();
     const inputFileRef = useRef<HTMLInputElement>(null);
 
     const [selectedImage, setSelectedImage] = useState();
 
     const handleCreatePost = async () => {
+        if (posting) return;
+        setPosting(true);
         const { data } = await axios.post(`/api/posts`, {
             providerId: user?.id,
             text: text,
@@ -44,9 +47,10 @@ export default function NewPost() {
             );
             const newBlob = (await response.json()) as PutBlobResult;
             if (newBlob != null) {
-                router.push(`/posts`)
+                router.push(`/posts/${data.post.id}`)
             }
         }
+        setPosting(false);
     };
 
     const handleFileChange = (event: any) => {
@@ -61,11 +65,9 @@ export default function NewPost() {
     }, [ready, authenticated]);
 
     return (
-        <div className="flex flex-col h-screen justify-center items-center">
+        <div className="flex flex-col justify-center items-center">
 
-            <Card
-                className="overflow-hidden" x-chunk="dashboard-07-chunk-4"
-            >
+            <Card>
                 <CardHeader>
                     <CardTitle>
                         Create Post
@@ -117,7 +119,7 @@ export default function NewPost() {
                                 className="w-full max-w-md mt-5 px-4 rounded"
                                 onClick={handleCreatePost}
                                 type="submit"
-                                disabled={selectedImage == null || text?.trim() == ''} // disable button when upload is happening
+                                disabled={selectedImage == null || text?.trim() == '' || posting}
                             >
                                 Hawk Tuah 🎤
                             </Button>

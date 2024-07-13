@@ -5,6 +5,29 @@ import { Posts } from "@prisma/client";
 import { fetchUserByProviderId } from "../users/user.service";
 import prisma from "db";
 
+export async function GET(req: NextRequest) {
+  const providerId = req.nextUrl.searchParams.get("providerId");
+  if (!isAuthenticated(req) || providerId == null) {
+    return NextResponse.json({
+      success: false,
+    });
+  }
+
+  const user = await fetchUserByProviderId(providerId);
+  if (user == null) {
+    return NextResponse.json({
+      success: false,
+    });
+  }
+
+  const posts = await fetchPosts(user.id);
+
+  return NextResponse.json({
+    success: true,
+    posts: posts,
+  });
+}
+
 export async function POST(req: NextRequest) {
   const createPostDto = (await req.json()) as CreatePostDto;
   const claims = await isAuthenticated(req);
@@ -43,6 +66,17 @@ async function createPost(createPostDto: CreatePostDto): Promise<Posts> {
     data: {
       user_id: createPostDto.userId,
       text: createPostDto.text,
+    },
+  });
+}
+
+async function fetchPosts(userId: string) {
+  return await prisma.posts.findMany({
+    where: {
+      user_id: userId,
+    },
+    include: {
+      postsFrames: true,
     },
   });
 }
