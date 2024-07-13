@@ -5,6 +5,7 @@ import { Icons } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { publicClient } from "@/utils/viemClient";
 import { TokenSettings, Users } from "@prisma/client";
 import axios from "axios";
@@ -163,24 +164,60 @@ export default function SubscriptionPage({ params }: PageProps) {
                 </Card>
 
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <div className="text-xl font-semibold mb-4">Subscription Details</div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium">Subscription Type</div>
-                    {/* <Badge>Pro</Badge> */}
+
+
+              <div className="m-3 grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <div className="text-xl font-semibold mb-4">Purchase Tokens</div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-medium">Subscription Type</div>
+                      {/* <Badge>Pro</Badge> */}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-medium">Renewal Date</div>
+                      <div className="text-sm">2024-12-31</div>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium">Renewal Date</div>
-                    <div className="text-sm">2024-12-31</div>
+
+                  <div className="pt-3 flex flex-row space-x-3">
+                    <Button
+                    // disabled={!(purchaseAmount && Number(purchaseAmount) > 0) || isLoading}
+                    // onClick={() => handlePurchaseTokens(Number(purchaseAmount))}
+                    >Purchase Tokens (Input USDc amount)</Button>
+                    <Input
+                      type="number"
+                      placeholder="Amount"
+                    // onChange={(event) =>
+                    //   setPurchaseAmount(event.target.value)
+                    // }
+                    ></Input>
                   </div>
                 </div>
-                <Button variant="outline" className="mt-4 w-full">
-                  Manage Subscription
-                </Button>
+
+
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <div className="text-xl font-semibold mb-4">Purchase Subscription</div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-medium">Subscription Type</div>
+                      {/* <Badge>Pro</Badge> */}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-medium">Expiry Date</div>
+                      <div className="text-sm">
+                        {new Date(new Date(Date.now()).setMonth(new Date(Date.now()).getMonth() + 1)).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                  <Button variant="default" className="mt-4 w-full">
+                    Subscribe
+                  </Button>
+                </div>
+
+
               </div>
-
-
             </main>
           </div>
         </div>

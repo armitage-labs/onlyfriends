@@ -48,9 +48,11 @@ export default function HomePage() {
   useEffect(() => {
     if (walletReady) {
       console.log("Wallet", wallets);
-      setConnectedWalletAddress(wallets[0].address);
-      setConnectedChainId(wallets[0].chainId);
-      setConnectedWallet(wallets[0]);
+      console.log("FILTER:", wallets.filter((wallet) => { return wallet.connectorType == "injected" }));
+
+      setConnectedWalletAddress(wallets.find((wallet) => { return wallet.connectorType == "injected" })?.address);
+      setConnectedChainId(wallets.find((wallet) => { return wallet.connectorType == "injected" })?.chainId);
+      setConnectedWallet(wallets.find((wallet) => { return wallet.connectorType == "injected" }));
     }
   }, [walletReady, wallets])
 

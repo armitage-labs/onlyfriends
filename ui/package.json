@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dynamic-labs/ethereum": "^2.3.1",
+    "@dynamic-labs/sdk-react-core": "^2.3.1",
     "@frames.js/debugger": "^0.3.5",
     "@prisma/client": "5.16.2",
     "@privy-io/react-auth": "^1.74.1",
