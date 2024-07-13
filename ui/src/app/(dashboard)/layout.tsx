@@ -14,18 +14,18 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <CreatorProviders>
-      <div className="pt-3">
-        <Header></Header>
-        <div className="flex h-screen">
-          <Sidebar />
-          <main className="h-screen w-full">
-            <div className="">
-              {children}
-            </div>
-          </main>
-        </div >
+    // <CreatorProviders>
+    <div className="pt-3">
+      <Header></Header>
+      <div className="flex h-screen">
+        <Sidebar />
+        <main className="h-screen w-full">
+          <div className="">
+            {children}
+          </div>
+        </main>
       </div >
-    </CreatorProviders>
+    </div >
+    // </CreatorProviders>
   );
 }

@@ -7,11 +7,11 @@ export default function CreatorProviders({ children }: { children: React.ReactNo
       config={{
         // Create embedded wallets for users who don't have a wallet
         loginMethods: [
-          'farcaster',
+          'farcaster'
         ],
-        // embeddedWallets: {
-        //     createOnLogin: 'users-without-wallets',
-        // },
+        embeddedWallets: {
+          createOnLogin: 'users-without-wallets',
+        },
       }}
     >
       {children}

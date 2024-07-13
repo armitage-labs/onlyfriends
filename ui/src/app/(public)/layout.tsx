@@ -10,10 +10,10 @@ export default function PublicLayout({
 }>) {
   const thing = "";
   return (
-    <CreatorProviders>
-      <html lang="en">
-        <body>{children}</body>
-      </html>
-    </CreatorProviders>
+    // <CreatorProviders>
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+    // </CreatorProviders>
   );
 }
