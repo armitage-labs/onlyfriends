@@ -56,12 +56,14 @@ import {
   PiggyBank,
   Coins,
   Send,
+  Rss,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
   send: Send,
+  rss: Rss,
   coins: Coins,
   piggyBank: PiggyBank,
   dashboard: LayoutDashboardIcon,

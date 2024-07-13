@@ -1,8 +1,9 @@
 'use client';
 
 import { Inter as FontSans } from "next/font/google"
-import "./globals.css";
+import "../globals.css";
 import { cn } from "@/lib/utils";
+import UserProviders from "../providers/userProviders";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -20,7 +21,9 @@ export default function RootLayout({
         "bg-background font-sans",
         fontSans.variable
       )}>
-        {children}
+        <UserProviders>
+          {children}
+        </UserProviders>
       </body>
     </html>
   );

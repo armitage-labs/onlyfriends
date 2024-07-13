@@ -1,22 +1,19 @@
-"use client";
+"use client"
 
-import type { Metadata } from "next";
 import "../globals.css";
-
-// export const metadata: Metadata = {
-//     title: "Sign In",
-//     description: "Create your account",
-// };
+import CreatorProviders from "../providers/creatorProviders";
 
 export default function PublicLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-    const thing = "";
-    return (
-        <html lang="en">
-            <body>{children}</body>
-        </html>
-    );
+  const thing = "";
+  return (
+    <CreatorProviders>
+      <html lang="en">
+        <body>{children}</body>
+      </html>
+    </CreatorProviders>
+  );
 }

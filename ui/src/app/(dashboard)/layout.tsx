@@ -1,12 +1,12 @@
+'use client';
+
+
 import type { Metadata } from "next";
 import "../globals.css";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
+import CreatorProviders from "../providers/creatorProviders";
 
-export const metadata: Metadata = {
-  title: "OnlyFriends",
-  description: "Create you gated content",
-};
 
 export default function DashboardLayout({
   children,
@@ -14,16 +14,18 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="pt-3">
-      <Header></Header>
-      <div className="flex h-screen">
-        <Sidebar />
-        <main className="h-screen w-full">
-          <div className="">
-            {children}
-          </div>
-        </main>
+    <CreatorProviders>
+      <div className="pt-3">
+        <Header></Header>
+        <div className="flex h-screen">
+          <Sidebar />
+          <main className="h-screen w-full">
+            <div className="">
+              {children}
+            </div>
+          </main>
+        </div >
       </div >
-    </div >
+    </CreatorProviders>
   );
 }

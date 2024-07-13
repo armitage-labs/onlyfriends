@@ -5,9 +5,21 @@ import { Users } from "@prisma/client";
 import prisma from "db";
 
 export async function GET(req: NextRequest) {
-  return NextResponse.json({
-    success: false,
-  });
+  const usernameOrId = req.nextUrl.searchParams.get("username");
+
+  if (usernameOrId == null) return NextResponse.json({ success: false });
+  const user = await fetchUserByUsernameOrId(usernameOrId);
+
+  if (!user) {
+    return NextResponse.json({
+      success: false,
+    });
+  } else {
+    return NextResponse.json({
+      success: true,
+      user: user
+    });
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -29,6 +41,23 @@ export async function POST(req: NextRequest) {
       success: false,
     });
   }
+}
+
+async function fetchUserByUsernameOrId(usernameOrId: string): Promise<Users | null> {
+  let foundUser: Users | null = null;
+  foundUser = await prisma.users.findFirst({
+    where: {
+      username: usernameOrId
+    }
+  });
+  if (!foundUser) {
+    foundUser = await prisma.users.findFirst({
+      where: {
+        id: usernameOrId
+      }
+    });
+  }
+  return foundUser;
 }
 
 async function createUser(createUserDto: CreateUserDto): Promise<Users> {
