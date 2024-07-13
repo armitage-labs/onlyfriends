@@ -1,6 +1,7 @@
 "use client";
 
 import { ConnectedWallet, usePrivy, useWallets } from "@privy-io/react-auth";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"
 import { Network, Alchemy } from "alchemy-sdk";
@@ -14,11 +15,13 @@ import axios from "axios";
 import { TokenSettings } from "@prisma/client";
 import { publicClient } from "@/utils/viemClient";
 import { BondageCurveAbi } from "@/abis/bondageCurve";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icons } from "@/components/icons";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { UsdcAbi } from "@/abis/usdc";
+import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { TrendingUp } from "lucide-react";
 
 export default function HomePage() {
 
@@ -223,6 +226,22 @@ export default function HomePage() {
     setIsLoading(false);
   };
 
+  const chartData = [
+    { bonded: "1", price: 1 },
+    { bonded: "10", price: 5 },
+    { bonded: "20", price: 10 },
+    { bonded: "30", price: 15 },
+    { bonded: "40", price: 20 },
+    { bonded: "50", price: 25 },
+  ]
+
+  const chartConfig = {
+    desktop: {
+      label: "bonded",
+      color: "#2563eb",
+    },
+  } satisfies ChartConfig
+
   return (
     <div className="flex-1 space-y-4  p-4 md:p-8">
 
@@ -248,11 +267,15 @@ export default function HomePage() {
                   <Icons.messageCircleHeart className="mr-2 h-4 w-4" />
                   <AlertTitle>You have been pegged!</AlertTitle>
                   <AlertDescription>
-                    <Link
-                      href={`https://base-sepolia.blockscout.com/address/${tokenSettings?.token_address}`}
-                    >
-                      {`Bondage Curve deployed at address: ${tokenSettings?.token_address}`}
-                    </Link>
+                    <div>
+                      <Link
+                        href={`https://base-sepolia.blockscout.com/address/${tokenSettings?.token_address}`}
+                      >
+                        {`Bondage Curve ${tokenSettings?.token_name} ${tokenSettings?.token_symbol} deployed at address: ${tokenSettings?.token_address}`}
+                      </Link>
+                    </div>
+
+
                   </AlertDescription>
                 </Alert>
               </div>
@@ -305,6 +328,52 @@ export default function HomePage() {
                   </CardContent>
                 </Card>
               </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Bondage Curve - {tokenSettings?.token_symbol} Price</CardTitle>
+                  <CardDescription>{tokenSettings?.token_name} price in USDc </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer config={chartConfig}>
+                    <LineChart
+                      accessibilityLayer
+                      data={chartData}
+                      margin={{
+                        left: 12,
+                        right: 12,
+                      }}
+                    >
+                      <CartesianGrid vertical={false} />
+                      <XAxis
+                        dataKey="bonded"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        tickFormatter={(value) => value.slice(0, 3)}
+                      />
+                      <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent hideLabel />}
+                      />
+                      <Line
+                        dataKey="price"
+                        type="linear"
+                        stroke="var(--color-desktop)"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </LineChart>
+                  </ChartContainer>
+                </CardContent>
+                <CardFooter className="flex-col items-start gap-2 text-sm">
+                  <div className="flex gap-2 font-medium leading-none">
+                    Bondage Curve increases the token price linearly <TrendingUp className="h-4 w-4" />
+                  </div>
+                  <div className="leading-none text-muted-foreground">
+                    Showing the price of {tokenSettings?.token_symbol} in USDc per tokens minted
+                  </div>
+                </CardFooter>
+              </Card>
 
             </div>
           ) : (

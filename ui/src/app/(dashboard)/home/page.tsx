@@ -21,6 +21,7 @@ export default function HomePage() {
   const [contentCreatorBalanceAvailable, setCreatorBalanceAvailable] = useState<string>();
   const [activeSubscriptionCount, setActiveSubscriptionCount] = useState<number>();
   const [tokenUsdcRate, setTokenUsdcRate] = useState<string>();
+  const [totalMintedTokens, setTotalMintedTokens] = useState<string>();
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -35,6 +36,7 @@ export default function HomePage() {
       handleFetchCreatorBalance();
       handleFetchActiveSubscriptionCount();
       handleGetCreatorTokenPrice();
+      handleGetTotalMintedTokens()
     }
   }, [tokenSettings]);
 
@@ -62,6 +64,15 @@ export default function HomePage() {
     })
     console.log("Creator balance:", data);
     setCreatorBalanceAvailable(String(data));
+  }
+
+  const handleGetTotalMintedTokens = async () => {
+    const data = await publicClient.readContract({
+      address: `0x${tokenSettings?.token_address.slice(2)}`,
+      abi: BondageCurveAbi,
+      functionName: "totalMintedTokens",
+    })
+    setTotalMintedTokens(String(data));
   }
 
   const handleGetCreatorTokenPrice = async () => {
@@ -104,61 +115,85 @@ export default function HomePage() {
                 </Alert>
               </div>
             ) : (
-              <div className="m-3 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div>
+                <div className="m-3 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Number of Subscribers</CardTitle>
-                    <Icons.heartPulse></Icons.heartPulse>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {activeSubscriptionCount}
-                    </div>
-                    <div className="flex justify-between">
-                      <p className="pt-1 text-xs text-muted-foreground">
-                        Current active subscribers
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Number of Subscribers</CardTitle>
+                      <Icons.heartPulse></Icons.heartPulse>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {activeSubscriptionCount}
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="pt-1 text-xs text-muted-foreground">
+                          Current active subscribers
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
 
 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
-                    <Icons.piggyBank></Icons.piggyBank>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {Number(contentCreatorBalanceAvailable) / 1000000} USDc
-                    </div>
-                    <div className="flex justify-between">
-                      <p className="pt-1 text-xs text-muted-foreground">
-                        Available for withdrawal immediately
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
+                      <Icons.piggyBank></Icons.piggyBank>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {Number(contentCreatorBalanceAvailable) / 1000000} USDc
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="pt-1 text-xs text-muted-foreground">
+                          Available for withdrawal immediately
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">{tokenSettings.token_name}</CardTitle>
-                    <Icons.coins></Icons.coins>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      1 {tokenSettings.token_symbol} = {Number(1 / (Number(tokenUsdcRate) / 1000000)).toFixed(3)} USDc
-                    </div>
-                    <div className="flex justify-between">
-                      <p className="pt-1 text-xs text-muted-foreground">
-                        Your personal token value
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">{tokenSettings.token_name}</CardTitle>
+                      <Icons.coins></Icons.coins>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        1 {tokenSettings.token_symbol} = {Number(1 / (Number(tokenUsdcRate) / 1000000)).toFixed(3)} USDc
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="pt-1 text-xs text-muted-foreground">
+                          Your personal token value
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                </div>
+
+                <div className="m-3 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total Minted Tokens</CardTitle>
+                      <Icons.coins></Icons.coins>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {(Number(totalMintedTokens) / 1000000).toFixed(3)}
+                      </div>
+                      <div className="flex justify-between">
+                        <p className="pt-1 text-xs text-muted-foreground">
+                          All tokens minted
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
               </div>
+
             )}
           </div>
         )
