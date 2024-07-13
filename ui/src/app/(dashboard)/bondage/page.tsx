@@ -47,6 +47,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (walletReady) {
+      console.log("Wallet", wallets);
       setConnectedWalletAddress(wallets[0].address);
       setConnectedChainId(wallets[0].chainId);
       setConnectedWallet(wallets[0]);

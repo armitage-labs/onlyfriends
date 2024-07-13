@@ -3,6 +3,7 @@
 import { BondageCurveAbi } from "@/abis/bondageCurve";
 import { Icons } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { publicClient } from "@/utils/viemClient";
 import { TokenSettings, Users } from "@prisma/client";
@@ -162,6 +163,24 @@ export default function SubscriptionPage({ params }: PageProps) {
                 </Card>
 
               </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <div className="text-xl font-semibold mb-4">Subscription Details</div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-medium">Subscription Type</div>
+                    {/* <Badge>Pro</Badge> */}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-medium">Renewal Date</div>
+                    <div className="text-sm">2024-12-31</div>
+                  </div>
+                </div>
+                <Button variant="outline" className="mt-4 w-full">
+                  Manage Subscription
+                </Button>
+              </div>
+
+
             </main>
           </div>
         </div>

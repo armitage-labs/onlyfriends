@@ -3,6 +3,8 @@ import { Invoices, Users } from "@prisma/client";
 export async function fetchActiveSubscription(
   walletAddress: string[]
 ): Promise<Invoices | null> {
+  console.log("WALLETS ");
+  console.log(walletAddress);
   const currentDate = new Date();
   return await prisma.invoices.findFirst({
     where: {
