@@ -9,3 +9,11 @@ export async function fetchUserByProviderId(
     },
   });
 }
+
+export async function fetchUserById(id: string): Promise<Users | null> {
+  return await prisma.users.findFirst({
+    where: {
+      id: id,
+    },
+  });
+}
