@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(
-        " bg-gradient-to-r from-primary/30 to-fuchsia-300/30 md:bg-opacity-0 font-sans",
+        "bg-gradient-to-r from-primary/30 to-fuchsia-300/30 md:bg-opacity-0 font-sans",
         fontSans.variable
       )}>
         <Providers>{children}</Providers>
