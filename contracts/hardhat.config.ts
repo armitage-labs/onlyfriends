@@ -30,6 +30,7 @@ const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "https://eth-sepolia.g.al
 const MATIC_RPC_URL = process.env.MATIC_RPC_URL || "https://polygon-mainnet.g.alchemy.com/v2/your-api-key"
 const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL || "https://polygon-mumbai.g.alchemy.com/v2/v3/your-api-key"
 const BASE_SEPOLIA_RPC_URL = process.env.BASE_SEPOLIA_RPC_URL || "https://base-sepolia.g.alchemy.com/v2/your-api-key"
+const ARBITRUM_SEPOLIA_RPC_URL = process.env.ARBITRUM_SEPOLIA_RPC_URL || "https://arb-sepolia.g.alchemy.com/v2/your-api-key"
 
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "api-key"
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "api-key"
@@ -62,6 +63,10 @@ const config: HardhatUserConfig = {
       url: BASE_SEPOLIA_RPC_URL,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : { mnemonic: MNEMONIC }
     },
+    arbitrumSepolia: {
+      url: ARBITRUM_SEPOLIA_RPC_URL,
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : { mnemonic: MNEMONIC }
+    },
     matic: {
       url: MATIC_RPC_URL,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : { mnemonic: MNEMONIC },
@@ -78,6 +83,7 @@ const config: HardhatUserConfig = {
       mainnet: ETHERSCAN_API_KEY || "api-key",
       sepolia: ETHERSCAN_API_KEY || "api-key",
       baseSepolia: ETHERSCAN_API_KEY || "api-key",
+      arbitrumSepolia: ETHERSCAN_API_KEY || "api-key",
       // Polygon
       polygon: POLYGONSCAN_API_KEY || "api-key",
       polygonMumbai: POLYGONSCAN_API_KEY || "api-key",
@@ -89,6 +95,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://base-sepolia.blockscout.com/api",
           browserURL: "https://base-sepolia.blockscout.com",
+        }
+      },
+      {
+        network: "arbitrumSepolia",
+        chainId: 421614,
+        urls: {
+          apiURL: "https://arbitrum-sepolia.blockscout.com/api",
+          browserURL: "https://arbitrum-sepolia.blockscout.com",
         }
       }
     ]
