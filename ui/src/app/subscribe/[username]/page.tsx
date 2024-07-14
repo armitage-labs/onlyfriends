@@ -469,10 +469,12 @@ export default function SubscriptionPage({ params }: PageProps) {
                   </Button>
                 </div>
 
+              </div>
 
-                {(primaryWallet == null || tokenSettings == null) ? (
-                  <></>
-                ) : (
+              {(primaryWallet == null || tokenSettings == null) ? (
+                <></>
+              ) : (
+                <div className="m-3">
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                     <div className="text-xl font-semibold mb-4">Subscription Transactions</div>
                     <Table>
@@ -494,7 +496,7 @@ export default function SubscriptionPage({ params }: PageProps) {
                             <TableCell>
                               <Button onClick={() => {
                                 window.location.href = `${chainConfigs[Number(tokenSettings.chain_id.split(":")[1])].explorerUrl}/tx/${invoice.txId}`;
-                              }} variant="link">{truncateMiddle(invoice.txId, 8, 8)}</Button>
+                              }} variant="link">{(invoice.txId)}</Button>
                             </TableCell>
                             <TableCell className="hidden sm:table-cell">
                               {(isDateInRange(new Date(), invoice.start_time, invoice.end_time) == null) ? (
@@ -511,8 +513,8 @@ export default function SubscriptionPage({ params }: PageProps) {
                       </TableBody>
                     </Table>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </main>
           </div>
         </div>

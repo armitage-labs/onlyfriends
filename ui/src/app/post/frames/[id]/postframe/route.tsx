@@ -77,9 +77,25 @@ async function createFrameHidden(req: NextRequest, user: Users, post: Posts) {
     } else {
       return {
         image: (
-          <div tw="flex flex-col items-center justify-center">
-            <div tw="flex flex-col items-center justify-center">Ready to unlock the good stuff?</div>
-            <div tw="flex flex-col items-center justify-center">Subscribe to {username} view this post!</div>
+          <div tw="flex">
+            <img
+              width="100%"
+              src={`https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/oops-VH7YTtB7yXmDB2T0iLxrjppRhaqQyU.svg`}
+              alt="Thumb"
+            />
+            <span
+              style={{
+                position: 'absolute',
+                color: 'white',
+                padding: '8px',
+                textAlign: 'center',
+                top: '84%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+              }}
+            >
+              {username}
+            </span>
           </div>
         ),
         imageOptions: {
