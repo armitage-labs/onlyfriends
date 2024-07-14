@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { publicClient } from "@/utils/viemClient";
 import { BondageCurveAbi } from "@/abis/bondageCurve";
+import { chainConfigs } from "@/app/api/chain/chain.service";
 
 export default function HomePage() {
   const router = useRouter();
@@ -60,8 +61,10 @@ export default function HomePage() {
   }
 
   const handleFetchCreatorBalance = async () => {
-    if (!tokenSettings) return;
-    const data = await publicClient.readContract({
+    if (tokenSettings == null) return;
+    const chainIdString: string = tokenSettings.chain_id.split(":")[1];
+    const chainId: number = parseInt(chainIdString);
+    const data = await publicClient(chainConfigs[chainId].chain).readContract({
       address: `0x${tokenSettings?.token_address.slice(2)}`,
       abi: BondageCurveAbi,
       functionName: "contentCreatorBalance",
@@ -71,7 +74,10 @@ export default function HomePage() {
   }
 
   const handleGetTotalMintedTokens = async () => {
-    const data = await publicClient.readContract({
+    if (tokenSettings == null) return;
+    const chainIdString: string = tokenSettings.chain_id.split(":")[1];
+    const chainId: number = parseInt(chainIdString);
+    const data = await publicClient(chainConfigs[chainId].chain).readContract({
       address: `0x${tokenSettings?.token_address.slice(2)}`,
       abi: BondageCurveAbi,
       functionName: "totalMintedTokens",
@@ -81,7 +87,10 @@ export default function HomePage() {
 
 
   const handleGetTotalBurnedTokens = async () => {
-    const data = await publicClient.readContract({
+    if (tokenSettings == null) return;
+    const chainIdString: string = tokenSettings.chain_id.split(":")[1];
+    const chainId: number = parseInt(chainIdString);
+    const data = await publicClient(chainConfigs[chainId].chain).readContract({
       address: `0x${tokenSettings?.token_address.slice(2)}`,
       abi: BondageCurveAbi,
       functionName: "totalBurnedTokens",
@@ -90,7 +99,10 @@ export default function HomePage() {
   }
 
   const handleGetTotalSubscriptionsPurchased = async () => {
-    const data = await publicClient.readContract({
+    if (tokenSettings == null) return;
+    const chainIdString: string = tokenSettings.chain_id.split(":")[1];
+    const chainId: number = parseInt(chainIdString);
+    const data = await publicClient(chainConfigs[chainId].chain).readContract({
       address: `0x${tokenSettings?.token_address.slice(2)}`,
       abi: BondageCurveAbi,
       functionName: "totalSubscriptionsPurchased",
@@ -99,7 +111,10 @@ export default function HomePage() {
   }
 
   const handleGetCreatorTokenPrice = async () => {
-    const data = await publicClient.readContract({
+    if (tokenSettings == null) return;
+    const chainIdString: string = tokenSettings.chain_id.split(":")[1];
+    const chainId: number = parseInt(chainIdString);
+    const data = await publicClient(chainConfigs[chainId].chain).readContract({
       address: `0x${tokenSettings?.token_address.slice(2)}`,
       abi: BondageCurveAbi,
       functionName: "calculatePurchaseReturnPrice",
