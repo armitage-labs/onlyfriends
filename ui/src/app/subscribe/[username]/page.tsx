@@ -28,7 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { chainConfigs } from "@/app/api/chain/chain.service";
+import { chainConfigs, getAlchemyClient } from "@/app/api/chain/chain.service";
 
 interface PageProps {
   params: { username: string };
@@ -55,14 +55,6 @@ export default function SubscriptionPage({ params }: PageProps) {
   const [userTokenBalance, setUserTokenBalance] = useState<string>();
   const [subscriptionPrice, setSubscriptionPrice] = useState<string>();
   const [stats, setStats] = useState<StatsDto>();
-
-  const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_APIKEY || "";
-
-  const settings = {
-    apiKey: alchemyApiKey,
-    network: Network.BASE_SEPOLIA // TODO from token settings
-  }
-  const alchemy = new Alchemy(settings);
 
   useEffect(() => {
     handleFetchUserDetails();
@@ -150,7 +142,10 @@ export default function SubscriptionPage({ params }: PageProps) {
   }
 
   const handleGetCreatorTokenPrice = async () => {
-    const data = await publicClient.readContract({
+    if (primaryWallet == null || tokenSettings == null) return;
+    const chainIdString: string = tokenSettings.chain_id.split(":")[1];
+    const chainId: number = parseInt(chainIdString);
+    const data = await publicClient(chainConfigs[chainId].chain).readContract({
       address: `0x${tokenSettings?.token_address.slice(2)}`,
       abi: BondageCurveAbi,
       functionName: "calculatePurchaseReturnPrice",
@@ -167,8 +162,10 @@ export default function SubscriptionPage({ params }: PageProps) {
   }
 
   const handleUserTokenBalance = async () => {
-    if (primaryWallet == null) return;
-    const data = await publicClient.readContract({
+    if (primaryWallet == null || tokenSettings == null) return;
+    const chainIdString: string = tokenSettings.chain_id.split(":")[1];
+    const chainId: number = parseInt(chainIdString);
+    const data = await publicClient(chainConfigs[chainId].chain).readContract({
       address: `0x${tokenSettings?.token_address.slice(2)}`,
       abi: BondageCurveAbi,
       functionName: "balanceOf",
@@ -179,8 +176,10 @@ export default function SubscriptionPage({ params }: PageProps) {
   }
 
   const handleGetSubscriptionPrice = async () => {
-    if (primaryWallet == null) return;
-    const data = await publicClient.readContract({
+    if (primaryWallet == null || tokenSettings == null) return;
+    const chainIdString: string = tokenSettings.chain_id.split(":")[1];
+    const chainId: number = parseInt(chainIdString);
+    const data = await publicClient(chainConfigs[chainId].chain).readContract({
       address: `0x${tokenSettings?.token_address.slice(2)}`,
       abi: BondageCurveAbi,
       functionName: "calculateSubscriptionPrice",
@@ -190,7 +189,7 @@ export default function SubscriptionPage({ params }: PageProps) {
   }
 
   const handlePurchaseTokens = async (usdcAmount: number) => {
-    if (primaryWallet == null) return;
+    if (primaryWallet == null || tokenSettings == null) return;
     const provider = await primaryWallet.connector.getSigner<WalletClient<Transport, Chain, Account>>();
     const data = encodeFunctionData({
       abi: BondageCurveAbi,
@@ -210,6 +209,10 @@ export default function SubscriptionPage({ params }: PageProps) {
         }
       ]
     });
+
+
+    const chainId = Number(tokenSettings.chain_id.split(":")[1]);
+    const alchemy = getAlchemyClient(chainId);
     await alchemy.core.waitForTransaction(transactionHash);
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     console.log(txReceipt);
@@ -217,7 +220,7 @@ export default function SubscriptionPage({ params }: PageProps) {
   }
 
   const handlePurchaseSubscription = async () => {
-    if (primaryWallet == null) return;
+    if (primaryWallet == null || tokenSettings == null) return;
     const provider = await primaryWallet.connector.getSigner<WalletClient<Transport, Chain, Account>>();
     await handleApproveCreatorTokenAllowance();
 
@@ -236,6 +239,9 @@ export default function SubscriptionPage({ params }: PageProps) {
         }
       ]
     });
+
+    const chainId = Number(tokenSettings.chain_id.split(":")[1]);
+    const alchemy = getAlchemyClient(chainId);
     await alchemy.core.waitForTransaction(transactionHash);
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     console.log(txReceipt);
@@ -246,7 +252,7 @@ export default function SubscriptionPage({ params }: PageProps) {
   }
 
   const handleApproveUsdcAllowance = async () => {
-    if (primaryWallet == null) return;
+    if (primaryWallet == null || tokenSettings == null) return;
     const provider = await primaryWallet.connector.getSigner<WalletClient<Transport, Chain, Account>>();
 
     const data = encodeFunctionData({
@@ -255,16 +261,21 @@ export default function SubscriptionPage({ params }: PageProps) {
       args: [`0x${tokenSettings?.token_address.slice(2)}`, 1010000000000000n]
     })
 
+    const chainId = Number(tokenSettings.chain_id.split(":")[1]);
+
+
     const transactionHash = await provider.request({
       method: "eth_sendTransaction",
       params: [
         {
           from: `0x${primaryWallet.address.slice(2)}`,
-          to: `0x036CbD53842c5426634e7929541eC2318f3dCF7e`, // todo need to come from config
+          to: `0x${chainConfigs[chainId].usdcAddress.slice(2)}`,
           data: data
         }
       ]
     });
+
+    const alchemy = getAlchemyClient(chainId);
     await alchemy.core.waitForTransaction(transactionHash);
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     console.log("Allowance approved");
@@ -272,7 +283,7 @@ export default function SubscriptionPage({ params }: PageProps) {
   }
 
   const handleApproveCreatorTokenAllowance = async () => {
-    if (primaryWallet == null) return;
+    if (primaryWallet == null || tokenSettings == null) return;
     const provider = await primaryWallet.connector.getSigner<WalletClient<Transport, Chain, Account>>();
     const data = encodeFunctionData({
       abi: BondageCurveAbi,
@@ -289,6 +300,9 @@ export default function SubscriptionPage({ params }: PageProps) {
         }
       ]
     });
+
+    const chainId = Number(tokenSettings.chain_id.split(":")[1]);
+    const alchemy = getAlchemyClient(chainId);
     await alchemy.core.waitForTransaction(transactionHash);
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     console.log("Content Creator token allowance approved");

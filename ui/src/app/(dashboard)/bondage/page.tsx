@@ -4,7 +4,6 @@ import { ConnectedWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"
-import { Network, Alchemy } from "alchemy-sdk";
 import { encodeFunctionData } from "viem"
 import { BondageCurveFactoryAbi } from "@/abis/bondageCurveFactory";
 import { Heading } from "@/components/ui/heading";
@@ -20,20 +19,11 @@ import { Icons } from "@/components/icons";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { UsdcAbi } from "@/abis/usdc";
-import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { chainConfigs, getAlchemyClient } from "@/app/api/chain/chain.service";
 
 export default function HomePage() {
-
-  const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_APIKEY || "";
-
-  const settings = {
-    apiKey: alchemyApiKey,
-    network: Network.BASE_SEPOLIA
-  }
-  const alchemy = new Alchemy(settings);
-
-
   const router = useRouter();
   const { ready, authenticated, user } = usePrivy();
   const { ready: walletReady, wallets } = useWallets();
@@ -48,6 +38,7 @@ export default function HomePage() {
   const [contentCreatorBalanceAvailable, setCreatorBalanceAvailable] = useState<string>();
   const [purchaseAmount, setPurchaseAmount] = useState<string>();
 
+
   const [connectedChainId, setConnectedChainId] = useState<string>();
   useEffect(() => {
     if (ready && !authenticated) {
@@ -56,6 +47,7 @@ export default function HomePage() {
       handleFetchTokenSettings();
     }
   }, [ready, authenticated]);
+
 
   useEffect(() => {
     if (walletReady) {
@@ -102,7 +94,10 @@ export default function HomePage() {
 
   const handleFetchCreatorBalance = async () => {
     if (!tokenSettings) return;
-    const data = await publicClient.readContract({
+
+    const chainIdString: string = tokenSettings.chain_id.split(":")[1];
+    const chainId: number = parseInt(chainIdString);
+    const data = await publicClient(chainConfigs[chainId].chain).readContract({
       address: `0x${tokenSettings?.token_address.slice(2)}`,
       abi: BondageCurveAbi,
       functionName: "contentCreatorBalance",
@@ -113,9 +108,8 @@ export default function HomePage() {
 
   const handleApproveUsdcAllowance = async () => {
     if (!connectedWallet || !connectedWalletAddress) return;
-
+    const chainId = Number(connectedWallet?.chainId.split(":")[1]);
     const provider = await connectedWallet?.getEthereumProvider();
-
     const data = encodeFunctionData({
       abi: UsdcAbi,
       functionName: "approve",
@@ -129,11 +123,13 @@ export default function HomePage() {
       params: [
         {
           from: connectedWalletAddress,
-          to: `0x036CbD53842c5426634e7929541eC2318f3dCF7e`,
+          to: chainConfigs[chainId].usdcAddress,
           data: data
         }
       ]
     });
+
+    const alchemy = getAlchemyClient(chainId);
     await alchemy.core.waitForTransaction(transactionHash);
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     console.log("Allowance approved");
@@ -163,6 +159,8 @@ export default function HomePage() {
         }
       ]
     });
+    const chainId = Number(connectedWallet?.chainId.split(":")[1]);
+    const alchemy = getAlchemyClient(chainId);
     await alchemy.core.waitForTransaction(transactionHash);
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     console.log(txReceipt);
@@ -189,6 +187,8 @@ export default function HomePage() {
         }
       ]
     });
+    const chainId = Number(connectedWallet?.chainId.split(":")[1]);
+    const alchemy = getAlchemyClient(chainId);
     await alchemy.core.waitForTransaction(transactionHash);
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     console.log(txReceipt);
@@ -198,27 +198,32 @@ export default function HomePage() {
   const handleDeployBondageCurve = async () => {
     console.log("entered");
     if (!connectedWallet || !connectedWalletAddress || !tokenName || !tokenSymbol) return;
-    console.log("passed")
+
+    const chainId = Number(connectedWallet?.chainId.split(":")[1]);
+    if (!chainConfigs[chainId].bondageEnabled) return;
     const provider = await connectedWallet?.getEthereumProvider();
 
     const data = encodeFunctionData({
       abi: BondageCurveFactoryAbi,
       functionName: "deployNewBondageCurve",
       // name, symbol, treasuryAddress, usdcAddress,
-      args: [tokenName, tokenSymbol, "0xCBD0DA5A02c31E504a812205089E876b5a329BB1", "0x036CbD53842c5426634e7929541eC2318f3dCF7e"]
+      args: [tokenName, tokenSymbol, "0xCBD0DA5A02c31E504a812205089E876b5a329BB1", chainConfigs[chainId].usdcAddress]
     });
     setIsLoading(true);
 
+    console.log("entered5");
     const transactionHash = await provider.request({
       method: "eth_sendTransaction",
       params: [
         {
           from: connectedWalletAddress,
-          to: "0x6be62d751671a2974AebEc4Ff240C5A8BcF77633",
+          to: chainConfigs[chainId].bondageCurveFactoryAddress,
           data: data,
         }
       ]
     });
+
+    const alchemy = getAlchemyClient(chainId);
     await alchemy.core.waitForTransaction(transactionHash);
     const txReceipt = await alchemy.core.getTransactionReceipt(transactionHash);
     const deployedBondageCurve = txReceipt?.logs[1].data;
