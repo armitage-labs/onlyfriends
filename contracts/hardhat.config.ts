@@ -1,4 +1,5 @@
 import "@nomicfoundation/hardhat-toolbox"
+import "@nomicfoundation/hardhat-verify"
 
 import { HardhatUserConfig } from "hardhat/config"
 
@@ -74,12 +75,26 @@ const config: HardhatUserConfig = {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
     apiKey: {
-      mainnet: ETHERSCAN_API_KEY,
-      sepolia: ETHERSCAN_API_KEY,
+      mainnet: ETHERSCAN_API_KEY || "api-key",
+      sepolia: ETHERSCAN_API_KEY || "api-key",
+      baseSepolia: ETHERSCAN_API_KEY || "api-key",
       // Polygon
-      polygon: POLYGONSCAN_API_KEY,
-      polygonMumbai: POLYGONSCAN_API_KEY,
+      polygon: POLYGONSCAN_API_KEY || "api-key",
+      polygonMumbai: POLYGONSCAN_API_KEY || "api-key",
     },
+    customChains: [
+      {
+        network: "baseSepolia",
+        chainId: 84532,
+        urls: {
+          apiURL: "https://base-sepolia.blockscout.com/api",
+          browserURL: "https://base-sepolia.blockscout.com",
+        }
+      }
+    ]
+  },
+  sourcify: {
+    enabled: false
   },
   namedAccounts: {
     deployer: {
