@@ -133,7 +133,7 @@ export default function HomePage() {
                   <Icons.messageCircleHeart className="mr-2 h-4 w-4" />
                   <AlertTitle>Heads up!</AlertTitle>
                   <AlertDescription>
-                    You haven't created a Bondage Curve and a Pegged Token yet.
+                    {"You haven't created a Bondage Curve and a Pegged Token yet."}
                   </AlertDescription>
                 </Alert>
               </div>
