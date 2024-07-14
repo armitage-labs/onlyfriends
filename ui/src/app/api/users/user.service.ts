@@ -1,4 +1,5 @@
 import { Users } from "@prisma/client";
+import prisma from "db";
 
 export async function fetchUserByProviderId(
   providerId: string

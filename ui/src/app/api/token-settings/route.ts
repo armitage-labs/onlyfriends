@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "db";
 import { CreateTokenSettingsDto } from "@/app/types/token-settings.dtos";
 import { isAuthenticated } from "../untils/authentication";
 import { fetchUserByProviderId } from "../users/user.service";
+import prisma from "db";
 
 export async function GET(req: NextRequest) {
   const providerId = req.nextUrl.searchParams.get("providerId");
@@ -20,14 +20,13 @@ export async function GET(req: NextRequest) {
   if (tokenSettings !== null) {
     return NextResponse.json({
       success: true,
-      tokenSettings: tokenSettings[0]
+      tokenSettings: tokenSettings[0],
     });
   } else {
     return NextResponse.json({
-      success: false
+      success: false,
     });
   }
-
 }
 
 export async function POST(req: NextRequest) {
@@ -57,11 +56,11 @@ export async function POST(req: NextRequest) {
   if (tokenSettings !== null) {
     return NextResponse.json({
       success: true,
-      tokenSettings: tokenSettings
+      tokenSettings: tokenSettings,
     });
   } else {
     return NextResponse.json({
-      success: false
+      success: false,
     });
   }
 }
@@ -69,9 +68,9 @@ export async function POST(req: NextRequest) {
 async function fetchTokenSettingsByUser(userId: string) {
   return await prisma.tokenSettings.findMany({
     where: {
-      user_id: userId
-    }
-  })
+      user_id: userId,
+    },
+  });
 }
 
 async function createTokenSettings(
@@ -87,7 +86,7 @@ async function createTokenSettings(
       chain_id: chainId,
       token_name: tokenName,
       token_symbol: tokenSymbol,
-      token_address: tokenAddress
-    }
-  })
+      token_address: tokenAddress,
+    },
+  });
 }
