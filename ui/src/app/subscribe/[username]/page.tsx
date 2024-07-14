@@ -371,10 +371,13 @@ export default function SubscriptionPage({ params }: PageProps) {
                   </CardContent>
                 </Card>
 
-
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-lg font-semibold text-foreground">Bondage Curve and Pegged Token</CardTitle>
+                    <CardTitle className="text-lg font-semibold text-foreground">
+                      Bondage Curve and Pegged Token
+                      <Button onClick={() => {
+                        window.location.href = `${chainConfigs[Number(tokenSettings.chain_id.split(":")[1])].explorerUrl}/address/${tokenSettings.token_address}`;
+                      }} variant="ghost"><Icons.externalLink className="w-4 h-4" /></Button></CardTitle>
                     <Icons.coins></Icons.coins>
                   </CardHeader>
                   <CardContent>

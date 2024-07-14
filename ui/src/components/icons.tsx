@@ -57,11 +57,13 @@ import {
   Coins,
   Send,
   Rss,
+  ExternalLink
 } from "lucide-react";
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  externalLink: ExternalLink,
   send: Send,
   rss: Rss,
   coins: Coins,
