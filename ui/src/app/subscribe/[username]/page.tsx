@@ -20,7 +20,15 @@ import {
   WalletClient,
 } from "viem";
 import { UsdcAbi } from "@/abis/usdc";
-
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { chainConfigs } from "@/app/api/chain/chain.service";
 
 interface PageProps {
   params: { username: string };
@@ -40,6 +48,7 @@ export default function SubscriptionPage({ params }: PageProps) {
   const [purchaseAmount, setPurchaseAmount] = useState<string>();
   const [activeSubscription, setActiveSubscription] = useState<Invoices>();
   const [subscriptions, setSubscriptions] = useState<Invoices[]>([]);
+  const [walletInvoices, setWalletInvoices] = useState<Invoices[]>([]);
   const { walletConnector } = useDynamicContext();
   const { primaryWallet } = useDynamicContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -77,6 +86,7 @@ export default function SubscriptionPage({ params }: PageProps) {
       handleFetchActiveSubscription();
       handleUserTokenBalance();
       handleGetSubscriptionPrice();
+      handleFetchWallletSubscriptions();
     }
   }, [tokenSettings, walletConnector]);
 
@@ -91,6 +101,15 @@ export default function SubscriptionPage({ params }: PageProps) {
     const { data } = await axios.get(`/api/subscriptions/all?username=${username}`);
     if (data.success) {
       setSubscriptions(data.invoices);
+    }
+  }
+
+  const handleFetchWallletSubscriptions = async () => {
+    if (primaryWallet == null) return;
+    const { data } = await axios.get(`/api/invoices/0x${primaryWallet.address.slice(2)}?username=${username}`);
+    console.log(data);
+    if (data.success) {
+      setWalletInvoices(data.invoices);
     }
   }
 
@@ -276,6 +295,20 @@ export default function SubscriptionPage({ params }: PageProps) {
     console.log(txReceipt);
   }
 
+  const truncateMiddle = (str: string, firstChars: number, lastChars: number) => {
+    if (str.length <= firstChars + lastChars) {
+      return str;
+    }
+    const startChars = str.slice(0, firstChars);
+    const endChars = str.slice(-lastChars);
+
+    return `${startChars}...${endChars}`;
+  };
+
+  function isDateInRange(date: Date, startDate: Date, endDate: Date): boolean {
+    return date >= startDate && date <= endDate;
+  }
+
   return (
     <>
       {(user && tokenSettings) ? (
@@ -437,12 +470,53 @@ export default function SubscriptionPage({ params }: PageProps) {
                 </div>
 
 
+                {(primaryWallet == null || tokenSettings == null) ? (
+                  <></>
+                ) : (
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <div className="text-xl font-semibold mb-4">Subscription Transactions</div>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>txid</TableHead>
+                          <TableHead className="hidden sm:table-cell">
+                            Status
+                          </TableHead>
+                          <TableHead className="hidden md:table-cell">
+                            End Date
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+
+                        {walletInvoices.map((invoice, index) => (
+                          <TableRow key={index}>
+                            <TableCell>
+                              <Button onClick={() => {
+                                window.location.href = `${chainConfigs[Number(tokenSettings.chain_id.split(":")[1])].explorerUrl}/tx/${invoice.txId}`;
+                              }} variant="link">{truncateMiddle(invoice.txId, 8, 8)}</Button>
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell">
+                              {(isDateInRange(new Date(), invoice.start_time, invoice.end_time) == null) ? (
+                                <span className="font-medium text-red-500">Not Subscribed</span>
+                              ) : (
+                                <span className="font-medium text-green-500">Active</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell">
+                              {invoice.end_time.toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </div>
             </main>
           </div>
         </div>
       ) : (
-
         <div>
           Loading
         </div>

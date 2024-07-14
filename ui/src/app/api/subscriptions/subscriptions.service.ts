@@ -29,6 +29,22 @@ export async function fetchActiveSubscription(
   });
 }
 
+export async function fetchAllSubscription(
+  username: string,
+  walletAddress: string
+): Promise<Invoices[] | null> {
+  const user = await fetchUserByUserNameOrId(username);
+  if (user == null) {
+    return null;
+  }
+  return await prisma.invoices.findMany({
+    where: {
+      walet_address: walletAddress.toLocaleLowerCase(),
+      user_id: user.id,
+    },
+  });
+}
+
 export async function fetchAllActiveSubscription(
   creator: string
 ): Promise<Invoices[] | null> {
