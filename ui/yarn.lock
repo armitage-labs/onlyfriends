@@ -5376,6 +5376,13 @@ formik@2.2.9:
     tiny-warning "^1.0.2"
     tslib "^1.10.0"
 
+framer-motion@^11.3.3:
+  version "11.3.3"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-11.3.3.tgz#9df16f80ac5583a8d4f90c844955ef4c6c5eb20b"
+  integrity sha512-Z+fwgwKveyjDXPpnNP0invAt0W8y2kYk7FHH3Vk2DxLtNVzBg8qhEvGapVeWZgcuvVnKvTKhJLX091mYdMzQBg==
+  dependencies:
+    tslib "^2.4.0"
+
 frames.js@^0.17.4:
   version "0.17.4"
   resolved "https://registry.yarnpkg.com/frames.js/-/frames.js-0.17.4.tgz#b7ebc3d47cd4aa05e77fe0de029d0996ede5f48d"
@@ -7478,6 +7485,11 @@ react-i18next@13.5.0:
   dependencies:
     "@babel/runtime" "^7.22.5"
     html-parse-stringify "^3.0.1"
+
+react-icons@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-5.2.1.tgz#28c2040917b2a2eda639b0f797bff1888e018e4a"
+  integrity sha512-zdbW5GstTzXaVKvGSyTaBalt7HSfuK5ovrzlpyiWHAFXndXTdd/1hdDHI4xBM1Mn7YriT6aqESucFl9kEXzrdw==
 
 react-international-phone@4.2.5:
   version "4.2.5"

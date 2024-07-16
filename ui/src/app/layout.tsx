@@ -21,7 +21,9 @@ export default function RootLayout({
         "bg-gradient-to-r from-primary/30 to-fuchsia-300/30 md:bg-opacity-0 font-sans",
         fontSans.variable
       )}>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
