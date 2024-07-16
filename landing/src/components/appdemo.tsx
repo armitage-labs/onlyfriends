@@ -96,17 +96,17 @@ function Chart({
           <stop offset="100%" stopColor="#13B5C8" stopOpacity="0" />
         </linearGradient>
       </defs>
-      {[...Array(gridLines - 1).keys()].map((index) => (
-        <line
-          key={index}
-          stroke="#a3a3a3"
-          opacity="0.1"
-          x1="0"
-          y1={(totalHeight / gridLines) * (index + 1)}
-          x2={totalWidth}
-          y2={(totalHeight / gridLines) * (index + 1)}
-        />
-      ))}
+      {/* {[...Array(gridLines - 1).keys()].map((index) => ( */}
+      {/*   <line */}
+      {/*     key={index} */}
+      {/*     stroke="#a3a3a3" */}
+      {/*     opacity="0.1" */}
+      {/*     x1="0" */}
+      {/*     y1={(totalHeight / gridLines) * (index + 1)} */}
+      {/*     x2={totalWidth} */}
+      {/*     y2={(totalHeight / gridLines) * (index + 1)} */}
+      {/*   /> */}
+      {/* ))} */}
       <motion.rect
         y={paddingY}
         width={pathWidth}
