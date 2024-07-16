@@ -7,9 +7,9 @@ export const metadata: Metadata = {
   title: "OnlyFriends",
   description:
     "Invest and trade your favorite content creators",
-  openGraph: {
-    images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/logo-with-text-sOnqDTsKFHSkmsrGeenkodbxLtlqR2.svg"],
-  },
+  // openGraph: {
+  //   images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/logo-with-text-sOnqDTsKFHSkmsrGeenkodbxLtlqR2.svg"],
+  // },
 };
 
 export default function RootLayout({
