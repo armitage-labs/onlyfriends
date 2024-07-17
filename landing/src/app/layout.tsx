@@ -13,7 +13,7 @@ export default function RootLayout({
       <body
         className={cn(
           GeistSans.className,
-          "bg-gradient-to-r from-primary to-fuchsia-300 antialiased h-full w-full"
+          "bg-gradient-to-r from-primary/50 to-fuchsia-300/50 antialiased h-full w-full"
         )}
       >
         {children}</body>

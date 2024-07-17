@@ -16,12 +16,15 @@ export function GradientCard() {
           className="object-contain"
         />
         <p className="text-primary sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
-          This is a private Farcaster Frame
+          <strong>
+            Private Farcaster Frame
+          </strong>
         </p>
 
         <p className="text-sm text-white dark:text-neutral-400 pb-3">
-          To view this post, you need to subscribe to the content creator. Do so by clicking the button.
-          Optionally, you can buy Personal Tokens of this content creator to support it.
+          <strong>
+            Subscribe to see this post. Subscriptions are always a <strong className="text-primary">fixed price</strong> that burns the equivalent amount of personal tokens, increasing their value
+          </strong>
         </p>
         <div className="flex flex-row justify-between">
           <Button className="pl-4 pr-1  text-white flex items-center space-x-1 mt-4 text-xs font-bold bg-zinc-800 w-full m-2">
