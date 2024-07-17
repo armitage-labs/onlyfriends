@@ -12,7 +12,7 @@ export default function PublicLayout({
   return (
     <html lang="en">
       <body>
-        <PrivyProviderImpl>
+        <PrivyProviderImpl loginMethods={['farcaster', 'email', 'wallet']}>
           {children}
         </PrivyProviderImpl>
       </body>
