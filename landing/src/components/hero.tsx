@@ -47,7 +47,7 @@ export const Hero = () => {
       >
 
 
-        <Badge onClick={() => router.push("/blog/top-5-llm-of-all-time")}>
+        <Badge onClick={() => router.push("/waitlist")}>
           Subscribe to the waitlist to qualify for an airdrop
 
         </Badge>
