@@ -11,6 +11,7 @@ import { Link } from "next-view-transitions";
 import { GradientCard } from "./gradient-card";
 import { SparklesCore } from "./ui/sparkles";
 import { TypewriterEffectSmooth } from "./typewriter-effect";
+import { AnimatedModalDemo } from "./ui/modal-demo";
 
 export const Hero = () => {
 
@@ -50,7 +51,9 @@ export const Hero = () => {
 
         <Badge onClick={() => router.push("/blog/top-5-llm-of-all-time")}>
           Subscribe to the waitlist to qualify for an airdrop
+
         </Badge>
+
       </motion.div>
       <motion.h1
         initial={{
@@ -118,7 +121,7 @@ export const Hero = () => {
         className="flex items-center gap-4 justify-center mt-6 relative z-10"
       >
         <div className="flex flex-row pb-32">
-          <Button>Get started</Button>
+          <Button>Waitlist</Button>
           <Button
             variant="simple"
             as={Link}

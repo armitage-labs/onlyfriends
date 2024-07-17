@@ -7,7 +7,7 @@ import React, { useId } from "react";
 export const Background = () => {
   return (
     <div className="absolute inset-0 h-full w-full pointer-events-none z-0">
-      <div className="absolute inset-0 h-full w-full bg-primary dark:bg-black pointer-events-none [mask-image:radial-gradient(ellipse_at_center,transparent,white)]" />
+      <div className="absolute inset-0 h-full w-full bg-primary/50 dark:bg-black pointer-events-none [mask-image:radial-gradient(ellipse_at_center,transparent,white)]" />
       {Array.from({ length: 6 }).map((_, index) => (
         <div className="flex" key={"grid-column" + index}>
           {Array.from({ length: 10 }).map((_, index) => (

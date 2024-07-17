@@ -18,7 +18,7 @@ export default function Home() {
       <div className="relative">
         <Background />
         <div className="bg-primary">
-          <PocketHero />
+          {/* <PocketHero /> */}
         </div>
 
 
