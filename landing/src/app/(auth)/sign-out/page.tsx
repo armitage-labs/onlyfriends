@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button"
 import { BackgroundGradient } from "@/components/ui/background-gradient"
 import { SparklesCore } from "@/components/ui/sparkles";
 import { useRouter } from "next/navigation";
@@ -8,20 +7,21 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useEffect } from "react";
 import Image from "next/image"
 
-
 export default function SignInPage() {
     const router = useRouter();
-    const { ready, authenticated, user, login } = usePrivy();
+    const { ready, authenticated, logout } = usePrivy();
 
-    // const disableLogin = !ready || (ready && authenticated);
+
+    const handleLogout = async () => {
+        await logout();
+        router.push(`/sign-in`)
+    }
 
     useEffect(() => {
-        if (authenticated) {
-            // for some reason the styles are not being loaded if you use outer.push
-            window.location.href = `/home`;
-            // router.push(`/home`)
+        if (ready) {
+            handleLogout();
         }
-    }, [ready, authenticated]);
+    }, [authenticated, ready]);
 
     return (
         <div className="flex items-center justify-center h-screen">
@@ -43,12 +43,6 @@ export default function SignInPage() {
                     alt="OnlyFriends Text Logo"
                     src={"https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/logo-with-text-sOnqDTsKFHSkmsrGeenkodbxLtlqR2.svg"}
                 />
-
-                <div className="flex flex-row justify-between">
-                    <Button className="flex items-center space-x-1 mt-4 font-bold w-full m-2" onClick={login}>
-                        <span className="text-center">Sign In</span>
-                    </Button>
-                </div>
             </BackgroundGradient>
         </div>
     )
