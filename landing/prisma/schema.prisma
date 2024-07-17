@@ -62,3 +62,17 @@ model Invoices {
   end_time      DateTime
   user          Users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
+
+model ContactForm {
+  id      String  @id @default(uuid())
+  email   String
+  name    String?
+  company String?
+  message String?
+}
+
+model Waitlist {
+  id      String  @id @default(uuid())
+  email   String
+  wallet    String
+  }
