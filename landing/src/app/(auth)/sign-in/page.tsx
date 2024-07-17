@@ -16,7 +16,6 @@ export default function SignInPage() {
     // const disableLogin = !ready || (ready && authenticated);
 
     useEffect(() => {
-        console.log(authenticated);
         if (authenticated) {
             // for some reason the styles are not being loaded if you use outer.push
             window.location.href = `/home`;

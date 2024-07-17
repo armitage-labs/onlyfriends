@@ -2,9 +2,6 @@
 
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
-import { GeistSans } from "geist/font/sans";
-import { cn } from '@/lib/utils';
-import "../globals.css";
 
 export default function DashboardLayout({
   children,
