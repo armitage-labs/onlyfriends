@@ -36,11 +36,11 @@ export default function SignInPage() {
     };
 
 
-    useEffect(() => {
-        if (authenticated && user != null) {
-            handleUserLogin();
-        }
-    }, [authenticated, user]);
+    // useEffect(() => {
+    //     if (authenticated && user != null) {
+    //         handleUserLogin();
+    //     }
+    // }, [authenticated, user]);
 
     return (
         <div className="flex justify-center items-center h-screen">
