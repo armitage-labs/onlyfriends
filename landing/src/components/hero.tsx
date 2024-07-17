@@ -10,8 +10,6 @@ import { useRouter } from "next/navigation";
 import { Link } from "next-view-transitions";
 import { GradientCard } from "./gradient-card";
 import { SparklesCore } from "./ui/sparkles";
-import { TypewriterEffectSmooth } from "./typewriter-effect";
-import { AnimatedModalDemo } from "./ui/modal-demo";
 
 export const Hero = () => {
 
@@ -121,7 +119,12 @@ export const Hero = () => {
         className="flex items-center gap-4 justify-center mt-6 relative z-10"
       >
         <div className="flex flex-row pb-32">
-          <Button>Waitlist</Button>
+          <Button
+            as={Link}
+            href="/waitlist"
+            className="flex space-x-2 items-center group"
+          >
+            Waitlist</Button>
           <Button
             variant="simple"
             as={Link}
