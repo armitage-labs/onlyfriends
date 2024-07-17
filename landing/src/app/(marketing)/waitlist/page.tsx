@@ -35,7 +35,7 @@ export default function WaitlistPage() {
           >
             <span>Join Now</span>
           </HoverBorderGradient>
-          <button className="px-4 py-2  text-white ">I'm not degen enough</button>
+          <button className="px-4 py-2  text-white ">I am not degen enough</button>
         </div>
       </Vortex>
     </div>
