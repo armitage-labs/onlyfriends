@@ -61,7 +61,7 @@ export default function WaitlistPage() {
             >
               <TwitterShareButton
                 url={"https://www.onlyfriends.tech/waitlist"}
-                title={`🌟 I just registered for the OnlyFriends and qualified for an #airdrop! 🪂 
+                title={`🌟 I just registered for OnlyFriends and qualified for an #airdrop! 🪂 
 
 With OnlyFriends, you can freely buy and trade personal tokens, all while enjoying fixed subscription prices in USDc for your favorite content without ever leaving Farcaster.
 
