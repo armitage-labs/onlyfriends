@@ -60,7 +60,7 @@ export default function WaitlistPage() {
               className="dark:bg-black bg-transparent text-primary dark:text-white flex items-center space-x-2"
             >
               <TwitterShareButton
-                url={"https://www.onlyfriends.tech"}
+                url={"https://www.onlyfriends.tech/waitlist"}
                 title={`🌟 I just registered for the OnlyFriends and qualified for an #airdrop! 🪂 
 
 With OnlyFriends, you can freely buy and trade personal tokens, all while enjoying fixed subscription prices in USDc for your favorite content without ever leaving Farcaster.
@@ -86,7 +86,7 @@ With OnlyFriends, you can freely buy and trade personal tokens, all while enjoyi
             >
 
               <TelegramShareButton
-                url={"https://www.onlyfriends.tech"}
+                url={"https://www.onlyfriends.tech/waitlist"}
                 title={`
 🌟 I just registered for OnlyFriends and qualified for an #airdrop! 🪂 
 

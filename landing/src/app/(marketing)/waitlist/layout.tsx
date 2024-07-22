@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Invest and trade your favorite Farcaster Content Creators",
   openGraph: {
-    images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/Untitled%20design%20(12)-0SoWIiTCjvnouK9vosWJwJ38d72HY3.png"],
+    images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/coming%20soon%20(1)-agjPBjlfcqJPK7tHqGSEmSyIS2LnEh.png"],
   },
 };
 
