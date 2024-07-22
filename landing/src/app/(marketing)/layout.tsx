@@ -4,22 +4,12 @@ import { NavBar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: "OnlyFriends Landing Page",
+  title: "OnlyFriends",
   description:
-    "Invest and trade your favorite content creators",
-  keywords: ["invest", "personal tokens", "tokens"],
+    "Invest and trade your favorite Farcaster Content Creators",
   openGraph: {
-    url: "https://www.onlyfriends.tech",
-    title: "OnlyFriends",
-    images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/logo-with-text-sOnqDTsKFHSkmsrGeenkodbxLtlqR2.svg"],
-    description:
-      "Invest and trade your favorite content creators",
+    images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/Untitled%20design%20(12)-0SoWIiTCjvnouK9vosWJwJ38d72HY3.png"],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "OnlyFriends Landing Page",
-    images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/coming%20soon%20(1)-agjPBjlfcqJPK7tHqGSEmSyIS2LnEh.png"],
-  }
 };
 
 export default function RootLayout({

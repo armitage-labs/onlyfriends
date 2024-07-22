@@ -2,22 +2,12 @@ import PrivyProviderImpl from "@/app/providers/privy-provider";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "OnlyFriends Waitlist",
+  title: "OnlyFriends",
   description:
-    "Get on the OnlyFriends waitlist now, so you can be the first to trade your favorite creator. Don't miss out!",
-  keywords: ["invest", "personal tokens", "tokens"],
+    "Invest and trade your favorite Farcaster Content Creators",
   openGraph: {
-    url: "https://www.onlyfriends.tech",
-    title: "OnlyFriends Waitlist",
-    images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/coming%20soon%20(1)-agjPBjlfcqJPK7tHqGSEmSyIS2LnEh.png"],
-    description:
-      "Get on the OnlyFriends waitlist now, so you can be the first to trade your favorite creator. Don't miss out!",
+    images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/Untitled%20design%20(12)-0SoWIiTCjvnouK9vosWJwJ38d72HY3.png"],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "OnlyFriends Waitlist",
-    images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/coming%20soon%20(1)-agjPBjlfcqJPK7tHqGSEmSyIS2LnEh.png"],
-  }
 };
 
 
