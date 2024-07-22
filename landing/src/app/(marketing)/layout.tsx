@@ -4,7 +4,7 @@ import { NavBar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: "OnlyFriends",
+  title: "OnlyFriends Landing Page",
   description:
     "Invest and trade your favorite content creators",
   keywords: ["invest", "personal tokens", "tokens"],
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "OnlyFriends",
-    images: "https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/coming%20soon%20(1)-agjPBjlfcqJPK7tHqGSEmSyIS2LnEh.png"
+    title: "OnlyFriends Landing Page",
+    images: ["https://xkrrcuvbmddexwwj.public.blob.vercel-storage.com/coming%20soon%20(1)-agjPBjlfcqJPK7tHqGSEmSyIS2LnEh.png"],
   }
 };
 
